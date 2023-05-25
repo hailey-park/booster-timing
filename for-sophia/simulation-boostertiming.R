@@ -34,8 +34,8 @@ waning_data_95UI <- read.csv("data/optimistic-ve/ve_waning_predictions_95UI.csv"
 
 #MAKE SURE YOU ARE SETTING THE CORRECT WANING CURVE FOR CALIBRATION (mean, lower, upper)
 waning_data_clean <- waning_data_mean
-#waning_data_clean <- waning_data_clean_95UI %>% filter(ui == "upper")
-#waning_data_clean <- waning_data_clean_95UI %>% filter(ui == "lower")
+#waning_data_clean <- waning_data_95UI %>% filter(ui == "upper")
+#waning_data_clean <- waning_data_95UI %>% filter(ui == "lower")
 
 
 #MAKE SURE YOU ARE READING IN THE CORRECT CALIBRATION FILE
