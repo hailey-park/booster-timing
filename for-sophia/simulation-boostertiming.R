@@ -165,7 +165,7 @@ oneBoosterSimulation <- function(df){
   input$total_deaths <- death_count
   input[i,,drop = FALSE]
   
-  write.csv(input, paste0("simulation-results/optimistic-ve/1Booster-", age_info, "-mean.csv")) ####CHANGE HERE
+  write.csv(colSums(input[, (7:31)]), paste0("simulation-results/optimistic-ve/1Booster-", age_info, "-mean.csv")) ####CHANGE HERE
 }
 
 clean_df %>% lapply(oneBoosterSimulation)
@@ -264,7 +264,7 @@ annualBoosterSimulation <- function(df){
   input$total_deaths <- death_count
   input[i,,drop = FALSE]
   
-  write.csv(input, paste0("simulation-results/optimistic-ve/annualBooster-", age_info, "-mean.csv")) ####CHANGE HERE
+  write.csv(colSums(input[, (7:31)]), paste0("simulation-results/optimistic-ve/annualBooster-", age_info, "-mean.csv")) ####CHANGE HERE
 }
 
 clean_df %>% lapply(annualBoosterSimulation)
@@ -364,7 +364,7 @@ biannualBoosterSimulation <- function(df){
   input$total_deaths <- death_count
   input[i,,drop = FALSE]
   
-  write.csv(input, paste0("simulation-results/optimistic-ve/biannualBooster-", age_info, "-mean.csv")) ####CHANGE HERE
+  write.csv(colSums(input[, (7:31)]), paste0("simulation-results/optimistic-ve/biannualBooster-", age_info, "-mean.csv")) ####CHANGE HERE
 }
 
 clean_df %>% lapply(biannualBoosterSimulation)
