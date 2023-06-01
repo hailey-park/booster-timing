@@ -6,7 +6,7 @@
 
 rm(list=ls())
 
-setwd("~/for-sophia")
+setwd("./for-sophia")
 
 #Load libraries
 library(readr)
@@ -31,14 +31,19 @@ avg_incidence_adj <- data.frame(age_group = c("18-49 years", "50-64 years", "65-
 
 ############################################################################
 #MAKE SURE LOADING IN CORRECT WANING DATA FROM CORRECT FOLDER
-waning_data_mean <- read.csv("data/optimistic-ve/ve_waning_predictions_mean.csv")[,-1] ##CHANGE HERE (optimistic_ve or pessimistic_ve)
-waning_data_95UI <- read.csv("data/optimistic-ve/ve_waning_predictions_95UI.csv")[,-1]  #CHANGE HERE (optimistic_ve or pessimistic_ve)
+waning_data_mean <- read.csv("data/pessimistic-ve/ve_waning_predictions_mean.csv")[,-1] ##CHANGE HERE (optimistic_ve or pessimistic_ve)
+waning_data_95UI <- read.csv("data/pessimistic-ve/ve_waning_predictions_95UI.csv")[,-1]  #CHANGE HERE (optimistic_ve or pessimistic_ve)
 
 
 #MAKE SURE YOU ARE SETTING THE CORRECT WANING CURVE FOR CALIBRATION (mean, lower, upper)
 waning_data_clean <- waning_data_mean
-#waning_data_clean <- waning_data_clean_95UI %>% filter(ui == "upper")
-#waning_data_clean <- waning_data_clean_95UI %>% filter(ui == "lower")
+waning_data_clean <- waning_data_95UI %>% filter(ui == "upper")
+waning_data_clean <- waning_data_95UI %>% filter(ui == "lower")
+
+waning_data_clean %>% 
+  mutate(prior_inf=as.factor(prior_inf)) %>% 
+  ggplot(aes(months, ve_pred, group=interaction(age_group, prior_inf), color=age_group, shape=prior_inf)) + 
+  geom_line() + geom_point()
 
 ############################################################################
 
@@ -48,23 +53,27 @@ four_doses_by_month$month <- as.character(four_doses_by_month$month)
 three_doses_by_month$month <- as.character(three_doses_by_month$month)
 
 #Create matrices for each age group
+set.seed(88)
 age_18_49_cal <- data.frame(individual = c(1:1000000),
                         age_group = '18-49 years',
                         num_doses = '3-dose',
                         prior_inf = rbinom(1000000, 1, 0.8238))
 
+set.seed(88)
 age_50_64_cal <- data.frame(individual = c(1:1000000),
                         age_group = '50-64 years',
                         num_doses = sample(c('3-dose', '4-dose'), 1000000, prob = c(0.6, 0.4), replace = TRUE),
                         
                         prior_inf = rbinom(1000000, 1, 0.6579))
 
+set.seed(88)
 age_65_74_cal <- data.frame(individual = c(1:1000000),
                         age_group = '65-74 years',
                         num_doses = sample(c('3-dose', '4-dose'), 1000000, prob = c(0.6, 0.4), replace = TRUE),
                         
                         prior_inf = rbinom(1000000, 1, 0.4681))
 
+set.seed(88)
 age_75_plus_cal <- data.frame(individual = c(1:1000000),
                           age_group = '75+ years',
                           num_doses = as.character(sample(c('3-dose', '4-dose'), 1000000, prob = c(0.6, 0.4), replace = TRUE)),
@@ -78,6 +87,7 @@ add.months= function(date,n) {seq(date, by = paste (n, "months"), length = 2)[2]
 
 time_since_last <- function(df) {
   #Calculate time since last dose and time since last infection
+  set.seed(88)
   last_dose_and_inf <- df %>% mutate(time_since_last_dose = ifelse(num_doses == "3-dose", 
                                                                    sample(three_doses_by_month$month,
                                                                           size = sum(num_doses == '3-dose'),
@@ -94,18 +104,21 @@ time_since_last <- function(df) {
                                                                          replace = TRUE),
                                                                   NA))
   #Reinfection for 10% of infected individuals
-  reinfection <- last_dose_and_inf %>% filter(prior_inf == 1) %>%  sample_frac(.1) %>% mutate(reinf_period = interval(as.Date(time_since_last_inf),
-                                                                                                                      as.Date("2022-06-01"),) %/% months(1)) %>%
+  set.seed(88)
+  reinfection <- last_dose_and_inf %>% filter(prior_inf == 1) %>%  
+    sample_frac(.1) %>% 
+    mutate(reinf_period = interval(as.Date(time_since_last_inf), as.Date("2022-06-01"),) %/% months(1)) %>%
     rowwise() %>% mutate(time_since_last_reinf = ifelse(reinf_period > 0,
                                                         sample(as.character(cases_by_month$month[as.Date(cases_by_month$month) >= add.months(as.Date(time_since_last_inf), 3)]),
                                                                size = 1,
                                                                prob = cases_by_month$perc_cases[as.Date(cases_by_month$month) >= add.months(as.Date(time_since_last_inf), 3)],
                                                                replace = TRUE),
-                                                        NA)) %>% dplyr::select(individual, time_since_last_reinf)                                                          
+                                                        NA)) %>% dplyr::select(individual,time_since_last_reinf)                                                          
   
   
   #Merge reinfection data to main df
-  merged <- merge(last_dose_and_inf, reinfection, by = c("individual"), all.x = TRUE) %>% mutate(time_since_last_dose_inf = pmax(as.Date(time_since_last_dose), as.Date(time_since_last_inf), as.Date(time_since_last_reinf), na.rm =  TRUE))
+  merged <- merge(last_dose_and_inf, reinfection, by = c("individual"), all.x = TRUE) %>% 
+    mutate(time_since_last_dose_inf = pmax(as.Date(time_since_last_dose), as.Date(time_since_last_inf), as.Date(time_since_last_reinf), na.rm =  TRUE))
   
   return(merged)
 }
@@ -119,6 +132,9 @@ calibration <- function(df) {
   #merge with protective effectiveness
   combined <- merge(merge(months_since, waning_data_clean, by.x = c("months_since_last_dose_inf", "age_group", "prior_inf"), by.y = c("months", "age_group", "prior_inf"), all.x = TRUE),
                     avg_incidence_adj, by = "age_group", all.x = TRUE)
+  
+  combined$ve_pred[combined$time_since_last_inf>="2022-06-01"] <- 1
+  combined$ve_pred[combined$time_since_last_reinf>="2022-06-01"] <- 1
   
   #Calibrate risk factor (Lambda)
   pe_list <- combined$ve_pred
@@ -152,7 +168,7 @@ calibration_results <- list(age_18_49_cal, age_50_64_cal, age_65_74_cal, age_75_
 
 save_results <- function(df){
   age_group <- (df$age_group)[1]
-  write.csv(df, paste0("calibration/optimistic-ve/adj-calibration-1mil-",age_group,"-mean.csv")) #CHANGE HERE (optmistic_ve or pessimistic_ve)
+  write.csv(df, paste0("calibration/pessimistic-ve/adj-calibration-1mil-",age_group,"-lower2.csv")) #CHANGE HERE (optmistic_ve or pessimistic_ve)
   
 }
 

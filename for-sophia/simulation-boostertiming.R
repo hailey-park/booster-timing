@@ -5,7 +5,7 @@
 ###################################################################################################
 
 rm(list=ls())
-setwd("~/for-sophia") ##CHANGE HERE
+setwd("./for-sophia") ##CHANGE HERE
 
 #Load libraries
 library(readr)
@@ -28,21 +28,21 @@ nonsevere_infection_multipliers <- data.frame(age_group = c("18-49 years", "50-6
 
 ############################################################################
 #MAKE SURE LOADING IN CORRECT WANING DATA FROM CORRECT FOLDER
-waning_data_mean <- read.csv("data/optimistic-ve/ve_waning_predictions_mean.csv")[,-1] ##CHANGE HERE (optimistic_ve or pessimistic_ve)
-waning_data_95UI <- read.csv("data/optimistic-ve/ve_waning_predictions_95UI.csv")[,-1]  #CHANGE HERE (optimistic_ve or pessimistic_ve)
+waning_data_mean <- read.csv("data/pessimistic-ve/ve_waning_predictions_mean.csv")[,-1] ##CHANGE HERE (optimistic_ve or pessimistic_ve)
+waning_data_95UI <- read.csv("data/pessimistic-ve/ve_waning_predictions_95UI.csv")[,-1]  #CHANGE HERE (optimistic_ve or pessimistic_ve)
 
 
 #MAKE SURE YOU ARE SETTING THE CORRECT WANING CURVE FOR CALIBRATION (mean, lower, upper)
 waning_data_clean <- waning_data_mean
-#waning_data_clean <- waning_data_clean_95UI %>% filter(ui == "upper")
-#waning_data_clean <- waning_data_clean_95UI %>% filter(ui == "lower")
+waning_data_clean <- waning_data_95UI %>% filter(ui == "upper")
+waning_data_clean <- waning_data_95UI %>% filter(ui == "lower")
 
 
 #MAKE SURE YOU ARE READING IN THE CORRECT CALIBRATION FILE
-age_18_49 <- read.csv("calibration/optimistic-ve/adj-calibration-1mil-18-49 years-mean.csv")[,-1]
-age_50_64 <-  read.csv("calibration/optimistic-ve/adj-calibration-1mil-50-64 years-mean.csv")[,-1]
-age_65_74 <-  read.csv("calibration/optimistic-ve/adj-calibration-1mil-65-74 years-mean.csv")[,-1]
-age_75_plus <-  read.csv("calibration/optimistic-ve/adj-calibration-1mil-75+ years-mean.csv")[,-1]
+age_18_49 <- read.csv("calibration/pessimistic-ve/adj-calibration-1mil-18-49 years-upper.csv")[,-1]
+age_50_64 <-  read.csv("calibration/pessimistic-ve/adj-calibration-1mil-50-64 years-mean.csv")[,-1]
+age_65_74 <-  read.csv("calibration/pessimistic-ve/adj-calibration-1mil-65-74 years-mean.csv")[,-1]
+age_75_plus <-  read.csv("calibration/pessimistic-ve/adj-calibration-1mil-75+ years-mean.csv")[,-1]
 
 
 ############################################################################
@@ -51,7 +51,7 @@ clean_age_matrix <- function(df){
   df %>% dplyr::select(c("individual", "age_group", "prior_inf", "months_since_last_dose_inf", "num_doses","lambda"))
 }
 
-clean_df <- list(age_18_49, age_50_64, age_65_74, age_75_plus) %>%
+clean_df <- list(age_18_49) %>%
   lapply(clean_age_matrix) 
 
 
@@ -165,7 +165,7 @@ oneBoosterSimulation <- function(df){
   input$total_deaths <- death_count
   input[i,,drop = FALSE]
   
-  write.csv(colSums(input[, (7:31)]), paste0("simulation-results/optimistic-ve/1Booster-", age_info, "-mean.csv")) ####CHANGE HERE
+  write.csv(colSums(input[, (7:31)]), paste0("simulation-results/pessimistic-ve/1Booster-", age_info, "-upper2.csv")) ####CHANGE HERE
 }
 
 clean_df %>% lapply(oneBoosterSimulation)
@@ -264,7 +264,7 @@ annualBoosterSimulation <- function(df){
   input$total_deaths <- death_count
   input[i,,drop = FALSE]
   
-  write.csv(colSums(input[, (7:31)]), paste0("simulation-results/optimistic-ve/annualBooster-", age_info, "-mean.csv")) ####CHANGE HERE
+  write.csv(colSums(input[, (7:31)]), paste0("simulation-results/pessimistic-ve/annualBooster-", age_info, "-upper.csv")) ####CHANGE HERE
 }
 
 clean_df %>% lapply(annualBoosterSimulation)
@@ -364,7 +364,7 @@ biannualBoosterSimulation <- function(df){
   input$total_deaths <- death_count
   input[i,,drop = FALSE]
   
-  write.csv(colSums(input[, (7:31)]), paste0("simulation-results/optimistic-ve/biannualBooster-", age_info, "-mean.csv")) ####CHANGE HERE
+  write.csv(colSums(input[, (7:31)]), paste0("simulation-results/pessimistic-ve/biannualBooster-", age_info, "-upper.csv")) ####CHANGE HERE
 }
 
 clean_df %>% lapply(biannualBoosterSimulation)
