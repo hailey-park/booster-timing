@@ -37,7 +37,6 @@ waning_data_clean <- waning_data_mean
 waning_data_clean <- waning_data_95UI %>% filter(ui == "upper")
 waning_data_clean <- waning_data_95UI %>% filter(ui == "lower")
 
-
 #MAKE SURE YOU ARE READING IN THE CORRECT CALIBRATION FILE
 age_18_49 <- read.csv("calibration/pessimistic-ve/adj-calibration-1mil-18-49 years-upper.csv")[,-1]
 age_50_64 <-  read.csv("calibration/pessimistic-ve/adj-calibration-1mil-50-64 years-mean.csv")[,-1]
