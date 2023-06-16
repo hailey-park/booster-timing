@@ -1,7 +1,7 @@
 # Comparison of Timing of Bivalent Booster Vaccination for COVID-19 to Prevent Severe Disease by Risk Group
 This repository contains analytic code for estimating the risk of severe COVID-19 under different frequencies of bivalent booster vaccination, accounting for waning of protection against severe disease and differential risk by age group.
 
-Data sources used for this analysis is publicly available, and can be found on the CDC and CDPH COVID-19 dashboards. 
+Data sources used for this analysis is publicly available. 
 
 
 ## Structure
