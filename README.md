@@ -4,9 +4,9 @@ This repository contains analytic code for estimating the risk of severe COVID-1
 Data sources used for this analysis is publicly available, and can be found on the CDC and CDPH COVID-19 dashboards. 
 
 
-Structure
-1-data cleaning: contains all code needed for initial cleaning of data
-2-analysis:
+##Structure
+'1-data cleaning': contains all code needed for initial cleaning of data
+'2-analysis':
 1-waning model: contains code for constructing the waning protection curves by risk group, and waning curves used for sensitivity analyses
 2-model calibration: contains code for constructing hypothetical cohorts of 1 million individuals for each risk group and calibrating age-specific estimates of severe COVID-19 risk 
 3-simulation main: contains code for running different frequencies of bivalent booster vaccination (no booster, one-time booster, annual booster, semiannual booster) over a two year time horizon
