@@ -1,5 +1,5 @@
 ###################################################################################################
-#Title: Vaccination Interventions
+#Title: Vaccination Interventions for immunocompetent groups
 #Author: Hailey Park
 #Date: Septemeber 25, 2023
 ###################################################################################################
@@ -20,21 +20,18 @@ outcome_occurrence <- function(age, inf, time, lambda, perfect_immunity_counter,
   df_protection <- (df_individuals_eligible[waning_data_clean, 
                            on=c("age_group", "prior_inf", "months"), 
                            nomatch = NULL]) %>% arrange(index_individual)
-  # df_protection <- merge(df_individuals_eligible, waning_data_clean , by = c("age_group", "prior_inf", "months"), all.x = TRUE) %>% arrange(index_individual)
-  print(df_protection %>% filter(index_individual == 546))
   
   severe_pe[index_individuals_eligible] <- df_protection$severe_ve_pred
   nonsevere_pe[index_individuals_eligible] <- df_protection$nonsevere_ve_pred
   
   severe_risk <- lambda * (1 - severe_pe)
   
-  nonsevere_multiplier <- (nonsevere_infection_multipliers %>% filter(age_group == age[1]))$multiplier / 2.8 #CHANGE HERE
+  nonsevere_multiplier <- (nonsevere_infection_multipliers %>% filter(age_group == age[1]))$multiplier / 2.8
   nonsevere_multiplier_adj <- (nonsevere_infection_multipliers %>% filter(age_group == age[1]))$multiplier_adjustment
   nonsevere_risk <- lambda * (1 - nonsevere_pe) * nonsevere_multiplier/nonsevere_multiplier_adj
   return(list(rbinom(length(severe_risk), 1, severe_risk), rbinom(length(nonsevere_risk), 1, nonsevere_risk)))
 }
 
-set.seed(88)
 ###########################################################################################
 
 noBoosterSimulation <- function(df){
@@ -60,7 +57,7 @@ noBoosterSimulation <- function(df){
   prob_death <- input$perc_death
   perfect_immunity_counter <- rep(0,nrow(input)) #If non-death infection occurs, counting down perfect immunity months
   index_recent_infection <- which(inf == 1 & time_since_last < 3 & time_since_last < time_since_last_dose) #Individuals infected in 3 months preceding start of sim have perfect immunity at start
-  perfect_immunity_counter[index_recent_infection] <- 4 - time_since_last[index_recent_infection] #REVISIT
+  perfect_immunity_counter[index_recent_infection] <- 4 - time_since_last[index_recent_infection] 
   death_marker <- rep(0,nrow(input)) #If death occurs
   hosp_count <- rep(0, nrow(input))
   death_count <- rep(0, nrow(input))
@@ -121,11 +118,7 @@ noBoosterSimulation <- function(df){
   return(list(colSums(input[, (8:57)]), 
               sum(colSums((input %>% filter(prior_inf == 1))[, (8:32)])), 
               sum(colSums((input %>% filter(prior_inf == 0))[, (8:32)]))))
-  #write.csv(colSums(input[, (8:57)]), paste0("simulation-results/updated model/95ui/waning-mean/sero-mean/case-mean/noBooster-", age_info, "-mean.csv"))
 }
-
-# set.seed(88)
-# clean_df %>% lapply(average_10_sims)
 
 
 oneBoosterSimulation <- function(df){
@@ -158,8 +151,7 @@ oneBoosterSimulation <- function(df){
   death_count <- rep(0, nrow(input))
   months <- c(1:24)
   vaccine_wave <- input$vaccine_wave
-  #average_pe <- rep(0, length(months))
-  
+
   #Iterate through each time step
   for (i in (1:25)) {
     print(i)
@@ -199,8 +191,9 @@ oneBoosterSimulation <- function(df){
     #If death, cut simulation for individual (death marker)
     death_ind_index <- index_severe_outcome[which(death_ind == 1)]
     death_marker[death_ind_index] <- 1
-    death_count[death_ind_index] <- death_count[death_ind_index] + 1
     
+    #Add deaths and hospitalizations to their respective counts
+    death_count[death_ind_index] <- death_count[death_ind_index] + 1
     hosp_ind_index <- index_severe_outcome[which(death_ind == 0)]
     hosp_count[hosp_ind_index] <- hosp_count[hosp_ind_index] + 1
     
@@ -222,12 +215,7 @@ oneBoosterSimulation <- function(df){
   return(list(colSums(input[, (8:57)]), 
               sum(colSums((input %>% filter(prior_inf == 1))[, (8:32)])), 
               sum(colSums((input %>% filter(prior_inf == 0))[, (8:32)]))))
-  #write.csv(colSums(input[, (8:55)]), paste0("simulation-results/updated model/95ui/waning-upper/sero-upper/case-lower/1Booster-", age_info, "-mean.csv")) ####CHANGE HERE
 }
-
-# set.seed(88)
-# clean_df %>% lapply(oneBoosterSimulation)
-
 
 annualBoosterSimulation <- function(df){
   
@@ -299,8 +287,9 @@ annualBoosterSimulation <- function(df){
     #If death, cut simulation for individual (death marker)
     death_ind_index <- index_severe_outcome[which(death_ind == 1)]
     death_marker[death_ind_index] <- 1
-    death_count[death_ind_index] <- death_count[death_ind_index] + 1
     
+    #Add deaths and hospitalizations to their respective counts
+    death_count[death_ind_index] <- death_count[death_ind_index] + 1
     hosp_ind_index <- index_severe_outcome[which(death_ind == 0)]
     hosp_count[hosp_ind_index] <- hosp_count[hosp_ind_index] + 1
     
@@ -320,12 +309,7 @@ annualBoosterSimulation <- function(df){
   return(list(colSums(input[, (8:57)]), 
               sum(colSums((input %>% filter(prior_inf == 1))[, (8:32)])), 
               sum(colSums((input %>% filter(prior_inf == 0))[, (8:32)]))))
-  #write.csv(colSums(input[, (8:55)]), paste0("simulation-results/updated model/95ui/waning-upper/sero-upper/case-lower/annualBooster-", age_info, "-mean.csv")) ####CHANGE HERE
 }
-
-# set.seed(88)
-# clean_df %>% lapply(annualBoosterSimulation)
-
 
 biannualBoosterSimulation <- function(df){
   
@@ -351,7 +335,7 @@ biannualBoosterSimulation <- function(df){
   prob_death <- input$perc_death
   perfect_immunity_counter <- rep(0,nrow(input)) #If non-death infection occurs, counting down perfect immunity months
   index_recent_infection <- which(inf == 1 & time_since_last < 3 & time_since_last < time_since_last_dose) #Individuals infected in 3 months preceding start of sim have perfect immunity at start
-  perfect_immunity_counter[index_recent_infection] <- 4 - time_since_last[index_recent_infection] #REVISIT
+  perfect_immunity_counter[index_recent_infection] <- 4 - time_since_last[index_recent_infection] 
   death_marker <- rep(0,nrow(input)) #If death occurs
   hosp_count <- rep(0, nrow(input))
   death_count <- rep(0, nrow(input))
@@ -398,8 +382,9 @@ biannualBoosterSimulation <- function(df){
     #If death, cut simulation for individual (death marker)
     death_ind_index <- index_severe_outcome[which(death_ind == 1)]
     death_marker[death_ind_index] <- 1
-    death_count[death_ind_index] <- death_count[death_ind_index] + 1
     
+    #Add deaths and hospitalizations to their respective counts
+    death_count[death_ind_index] <- death_count[death_ind_index] + 1
     hosp_ind_index <- index_severe_outcome[which(death_ind == 0)]
     hosp_count[hosp_ind_index] <- hosp_count[hosp_ind_index] + 1
     
@@ -411,8 +396,6 @@ biannualBoosterSimulation <- function(df){
     input[, i + 7] <- severe_outcomes
     input[, i + 32] <- nonsevere_outcomes
     
-    
-    
   }
   input$total_hosps <- hosp_count
   input$total_deaths <- death_count
@@ -421,10 +404,6 @@ biannualBoosterSimulation <- function(df){
   return(list(colSums(input[, (8:57)]), 
               sum(colSums((input %>% filter(prior_inf == 1))[, (8:32)])), 
               sum(colSums((input %>% filter(prior_inf == 0))[, (8:32)]))))
-  #write.csv(colSums(input[, (8:55)]), paste0("simulation-results/updated model/95ui/waning-upper/sero-upper/case-lower/biannualBooster-", age_info, "-mean.csv")) ####CHANGE HERE
 }
-
-# set.seed(88)
-# clean_df %>% lapply(biannualBoosterSimulation)
 
 ###########################################################################################

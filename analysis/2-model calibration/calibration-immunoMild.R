@@ -6,7 +6,7 @@
 
 rm(list=ls())
 
-setwd("~/Stanford Research/booster-timing-final")
+setwd("~/Stanford Research/booster-timing")
 
 #Load libraries
 library(readr)
@@ -111,7 +111,7 @@ calibration <- function(df) {
 
 save_results <- function(df){
   age_group <- (df$age_group)[1]
-  write.csv(df, paste0("results/calibration/immuno-mild/waning-", waning, "/sero-", sero, "/1mil-",age_group,"-monthly.csv")) 
+  write.csv(df, paste0("results/calibration/immunoMild/waning-", waning, "/sero-", sero, "/1mil-",age_group,"-monthly.csv")) 
   
 }
 
