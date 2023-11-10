@@ -1,0 +1,22 @@
+﻿Outcome,Vaccine Status,Age,Prior Infection,Month0.5,Month1,Month2,Month3,Month4,Month5,Month6,Month7,Month8,Month9,Month10,Month11,Month12,Month13,Month14,Month15,Month16,References
+Nonsevere Outcomes,Unvaccinated,18-49 years,Yes,,,,61.05537634,56.55537634,51.95537634,47.05537634,42.35537634,37.35537634,32.85537634,28.15537634,24.45537634,20.55537634,16.95537634,13.95537634,11.35537634,8.755376344,"Bobrovitz et al (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,Unvaccinated,18-49 years,Yes,,,,48.96,48.86,48.76,44.86,36.86,32.96,32.86,32.86,32.86,32.86,32.86,,,,"COVID Forecasting Team (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,Unvaccinated,18-49 years,No,,,,,,,,,,,,,,,,,,
+Nonsevere Outcomes,Unvaccinated,50-64 years,Yes,,,,65.20,60.70,56.10,51.20,46.50,41.50,37.00,32.30,28.60,24.70,21.10,18.10,15.50,12.90,"Bobrovitz et al (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,Unvaccinated,50-64 years,Yes,,,,53.10,53.00,52.90,49.00,41.00,37.10,37.00,37.00,37.00,37.00,37.00,,,,"COVID Forecasting Team (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,Unvaccinated,50-64 years,No,,,,,,,,,,,,,,,,,,
+Nonsevere Outcomes,Unvaccinated,65+ years,Yes,,,,75.87,71.37,66.77,61.87,57.17,52.17,47.67,42.97,39.27,35.37,31.77,28.77,26.17,23.57,"Bobrovitz et al (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,Unvaccinated,65+ years,Yes,,,,63.77,63.67,63.57,59.67,51.67,47.77,47.67,47.67,47.67,47.67,47.67,,,,"COVID Forecasting Team (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,Unvaccinated,65+ years,No,,,,,,,,,,,,,,,,,,
+Nonsevere Outcomes,2-dose,18-49 years,Yes,73.71,71.71,69.21,66.61,63.81,60.91,58.01,54.81,51.81,48.71,45.31,42.31,39.41,,,,,"Bobrovitz et al (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,2-dose,18-49 years,No,60.70,51.40,42.10,33.10,25.30,18.50,13.10,8.80,5.70,,,,,,,,,"Bobrovitz et al (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,2-dose,50-64 years,Yes,76.10,74.10,71.60,69.00,66.20,63.30,60.40,57.20,54.20,51.10,47.70,44.70,41.80,,,,,"Bobrovitz et al (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,2-dose,50-64 years,No,61.90,52.60,43.30,34.30,26.50,19.70,14.30,10.00,6.90,,,,,,,,,"Bobrovitz et al (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,2-dose,65+ years,Yes,81.41,79.41,76.91,74.31,71.51,68.61,65.71,62.51,59.51,56.41,53.01,50.01,47.11,,,,,"Bobrovitz et al (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,2-dose,65+ years,No,71.56,62.26,52.96,43.96,36.16,29.36,23.96,19.66,16.56,,,,,,,,,"Bobrovitz et al (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,3-dose,18-49 years,Yes,81.62,77.32,72.02,65.82,58.82,51.32,43.72,,,,,,,,,,,"Bobrovitz et al (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,3-dose,18-49 years,No,64.04,56.84,49.54,42.04,35.04,28.44,22.84,17.54,13.54,,,,,,,,,"Bobrovitz et al (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,3-dose,50-64 years,Yes,84.40,80.10,74.80,68.60,61.60,54.10,46.50,,,,,,,,,,,"Bobrovitz et al (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,3-dose,50-64 years,No,65.40,58.20,50.90,43.40,36.40,29.80,24.20,18.90,14.90,,,,,,,,,"Bobrovitz et al (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,3-dose,65+ years,Yes,91.40,87.10,81.80,75.60,68.60,61.10,53.50,,,,,,,,,,,"Bobrovitz et al (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
+Nonsevere Outcomes,3-dose,65+ years,No,70.53,63.33,56.03,48.53,41.53,34.93,29.33,24.03,20.03,,,,,,,,,"Bobrovitz et al (Lancet, 2023), Andeweg et al (Nature Comms, 2022)"
