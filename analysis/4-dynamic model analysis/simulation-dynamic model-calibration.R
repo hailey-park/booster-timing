@@ -23,9 +23,9 @@ library(data.table)
 #Load data
 avg_incidence_adj <- data.frame(age_group = c("0-17 years","18-49 years", "50-64 years", "65-74 years", "75+ years"),
                                 avg_inc = (c(.00008/5,.00008, .00016, .00041, .00113)/4.345) * c(1000,200, 79.6, 22.6, 9.6) * 2.5) 
-cases_by_week <- read.csv("data/cases_by_week.csv")[,-1]
-four_doses_by_week <- read.csv("data/four_doses_by_week.csv")[,-1]
-three_doses_by_week <- read.csv("data/three_doses_by_week.csv")[,-1]
+cases_by_week <- read.csv("data/clean-data/cases_by_week.csv")[,-1]
+four_doses_by_week <- read.csv("data/clean-data/four_doses_by_week.csv")[,-1]
+three_doses_by_week <- read.csv("data/clean-data/three_doses_by_week.csv")[,-1]
 
 nonsevere_waning <- read.csv("ve model results/weekly/combined_nonsevere_waning_predictions_weekly.csv")[,-1] %>%
   filter(estimate == "lower")
