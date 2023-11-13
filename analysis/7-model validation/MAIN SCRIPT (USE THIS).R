@@ -81,17 +81,8 @@ for (waning in c("upper", "mean", "lower")){
       source(here::here(paste0("analysis/7-model validation/intervention-functions-validation-", immune_status, ".R")))
 
       set.seed(88)
-      clean_df %>% lapply(average_10_sims_no)
-      
-      set.seed(88)
       clean_df %>% lapply(average_10_sims_one)
 
-      set.seed(88)
-      clean_df %>% lapply(average_10_sims_annual)
-
-      set.seed(88)
-      clean_df %>% lapply(average_10_sims_biannual)
-      
       
     }
   }

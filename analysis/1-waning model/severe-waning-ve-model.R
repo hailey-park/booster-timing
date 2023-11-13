@@ -100,7 +100,7 @@ prediction_data_monthly$months <- rep((c(0.5, 1:24)), each = 18)
 preds_monthly <- predict(severe_model, newdata = prediction_data_monthly, allow.new.levels = TRUE)
 prediction_data_monthly$ve_pred <- 1 - exp(preds_monthly)
 
-#Prediction for waning model (weekly timescale)
+#Prediction for waning model (weekly timescale; for dynamic model)
 # new_data_weekly <- data.frame(age_group = rep(c("18-49 years", "50-64 years", "65+ years"), each = 6),
 #                        estimate = rep(c("lower", "mean", "upper"), each = 2, times = 3),
 #                        prior_inf = rep(c(0,1), each = 1, times = 9),

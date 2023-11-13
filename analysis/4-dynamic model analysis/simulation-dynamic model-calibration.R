@@ -27,8 +27,8 @@ cases_by_week <- read.csv("data/clean-data/cases_by_week.csv")[,-1]
 four_doses_by_week <- read.csv("data/clean-data/four_doses_by_week.csv")[,-1]
 three_doses_by_week <- read.csv("data/clean-data/three_doses_by_week.csv")[,-1]
 
-nonsevere_waning <- read.csv("ve model results/weekly/combined_nonsevere_waning_predictions_weekly.csv")[,-1] %>%
-  filter(estimate == "lower")
+nonsevere_waning <- read.csv("results/waning-predictions/dynamic/combined_nonsevere_waning_predictions_weekly.csv")[,-1] %>%
+  filter(estimate == "mean")
 
 #Clean data
 four_doses_by_week$week <- as.character(four_doses_by_week$week)
@@ -157,14 +157,12 @@ calibration <- function(df) {
   
 
   lambda_calibration <- function(lambda) {
-    risk_cal_0_17 <- mean(lambda * beta[index_0_17] * (1-pe_list[index_0_17]) * 83381/10000000)#* 33595/10000000) 
-    risk_cal_18_49 <- mean(lambda * beta[index_18_49] * (1-pe_list[index_18_49]) * 83381/10000000)#* 33595/10000000) 
-    risk_cal_50_64 <- mean(lambda * beta[index_50_64] * (1-pe_list[index_50_64]) * 83381/10000000)#* 33595/10000000) 
-    risk_cal_65_74 <- mean(lambda * beta[index_65_74] * (1-pe_list[index_65_74]) * 83381/10000000)#* 33595/10000000) 
-    risk_cal_75plus <- mean(lambda * beta[index_75plus] * (1-pe_list[index_75plus]) * 83381/10000000)#* 33595/10000000) 
-    
-    #146108 This is monthly infections
-    
+    risk_cal_0_17 <- mean(lambda * beta[index_0_17] * (1-pe_list[index_0_17]) * 83381/10000000)
+    risk_cal_18_49 <- mean(lambda * beta[index_18_49] * (1-pe_list[index_18_49]) * 83381/10000000) 
+    risk_cal_50_64 <- mean(lambda * beta[index_50_64] * (1-pe_list[index_50_64]) * 83381/10000000)
+    risk_cal_65_74 <- mean(lambda * beta[index_65_74] * (1-pe_list[index_65_74]) * 83381/10000000)
+    risk_cal_75plus <- mean(lambda * beta[index_75plus] * (1-pe_list[index_75plus]) * 83381/10000000) 
+
     
     risk_cal <- c(risk_cal_0_17, risk_cal_18_49, risk_cal_50_64, risk_cal_65_74, risk_cal_75plus)
     return((sum(risk_cal - avg_incidence_adj$avg_inc)^2))
@@ -174,7 +172,6 @@ calibration <- function(df) {
   print(lambda$par)
 
   return(combined %>% mutate(lambda = lambda$par))
-  #return(combined)
 }
 
 set.seed(488)
