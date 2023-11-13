@@ -21,26 +21,33 @@ library(scales)
 library(data.table)
 
 #Load data
-avg_incidence_adj <- data.frame(age_group = c("0-17 years","18-49 years", "50-64 years", "65-74 years", "75+ years"),
-                                avg_inc = (c(.00008/5,.00008, .00016, .00041, .00113)/4.345) * c(1000,200, 79.6, 22.6, 9.6) * 2.5) 
+avg_incidence_data <- read.csv("data/clean-data/monthly-incidence-estimates.csv")[,-1]
 cases_by_week <- read.csv("data/clean-data/cases_by_week.csv")[,-1]
 four_doses_by_week <- read.csv("data/clean-data/four_doses_by_week.csv")[,-1]
 three_doses_by_week <- read.csv("data/clean-data/three_doses_by_week.csv")[,-1]
-
-nonsevere_waning <- read.csv("results/waning-predictions/dynamic/combined_nonsevere_waning_predictions_weekly.csv")[,-1] %>%
-  filter(estimate == "mean")
 
 #Clean data
 four_doses_by_week$week <- as.character(four_doses_by_week$week)
 three_doses_by_week$week <- as.character(three_doses_by_week$week)
 
+#Adjust the monthly severe incidence estimates to weekly non-severe incidence estimates
+avg_incidence_adj <- avg_incidence_data %>%
+  #adding the 0-17 year age group, assuming that average severe incidence is 5x less than 18-49 year incidence
+  add_row(age_group = "0-17 years", avg_inc = 0.00008/5) %>% 
+  arrange(age_group) %>%
+  #convert monthly incidence to weekly incidence (dividing by 4.345)
+  #apply age-specific nonsevere infection multipliers (this is the c(1000,200,79.6,22.6,9.6))
+  #apply additional nonsevere case multplier for better calibration (this is the 2.5x multiplier)
+  mutate(avg_inc = (avg_inc/4.345) * c(1000,200, 79.6, 22.6, 9.6) * 2.5) 
+  
 ############################################################################
 #Create matrix for entire population
-#Age-Counts from 2020 Census (https://www.census.gov/library/visualizations/interactive/exploring-age-groups-in-the-2020-census.html)
-#Age-specific immunocompromised prevalence from MarketScan 2017 (https://wwwnc.cdc.gov/eid/article/26/8/19-1493-f2)
-#Unvaccinated prevalence is from CDPH vaccination board (https://covid19.ca.gov/vaccination-progress-data/#overview)
-#For vaccinated prevalence, keeping same proportions of 3-dose vs. 4-dose
-#Assuming that severe immunocompromised cases are 5% of total immunocompromised groups
+  #Age-Counts from 2020 Census (https://www.census.gov/library/visualizations/interactive/exploring-age-groups-in-the-2020-census.html)
+  #Age-specific immunocompromised prevalence from MarketScan 2017 (https://wwwnc.cdc.gov/eid/article/26/8/19-1493-f2)
+  #Unvaccinated prevalence is from CDPH vaccination board (https://covid19.ca.gov/vaccination-progress-data/#overview)
+  #For vaccinated prevalence, keeping same proportions of 3-dose vs. 4-dose (https://www.cdc.gov/mmwr/volumes/72/wr/mm7207a5.htm)
+  #Assuming that severe immunocompromised cases are 5% of total immunocompromised groups
+  #NOTE: immunocompromised categories are immunocompetent (0), immunocompromised-mild (1), immunocompromised-severe (2)
 
 set.seed(488)
 age_0_17_cal <- data.frame(individual = c(1:(2206000)),
@@ -157,6 +164,8 @@ calibration <- function(df) {
   
 
   lambda_calibration <- function(lambda) {
+    #83,381 is the total infections (both severe and non-severe) in the entire population (N = 10,000,000) using the 
+    #age-specific non-severe/severe incidence estimates 
     risk_cal_0_17 <- mean(lambda * beta[index_0_17] * (1-pe_list[index_0_17]) * 83381/10000000)
     risk_cal_18_49 <- mean(lambda * beta[index_18_49] * (1-pe_list[index_18_49]) * 83381/10000000) 
     risk_cal_50_64 <- mean(lambda * beta[index_50_64] * (1-pe_list[index_50_64]) * 83381/10000000)
@@ -174,14 +183,21 @@ calibration <- function(df) {
   return(combined %>% mutate(lambda = lambda$par))
 }
 
-set.seed(488)
-calibration_results <- list(entire_population) %>%
-  lapply(time_since_last) %>%
-  lapply(calibration)
-
-inspection <- calibration_results[[1]] 
 
 
-hello <- head(inspection, 100)
-write.csv(inspection, "calibration/dynamic/entire_population_calibration_nonsevere2.5x_lower.csv")
-
+for (waning in c("lower", "mean", "upper")) {
+  
+  #Get non-severe waning curves and set to correct estimate
+  nonsevere_waning <- read.csv("results/waning-predictions/dynamic/combined_nonsevere_waning_predictions_weekly.csv")[,-1] %>%
+    filter(estimate == waning)
+  
+  #Run calibration
+  set.seed(488)
+  calibration_results <- list(entire_population) %>%
+    lapply(time_since_last) %>%
+    lapply(calibration)
+  
+  #Write to calibration folder
+  write.csv(calibration_results[[1]] , paste0("calibration/dynamic/entire_population_calibration_nonsevere2.5x_", waning, ".csv"))
+  
+}

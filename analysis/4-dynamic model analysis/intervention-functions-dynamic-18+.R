@@ -7,12 +7,18 @@
 #Function for outcome occurrence based on risk (Risk = Lambda* (1 - PE))
 outcome_occurrence <- function(age, inf, time, immuno, doses, lambda, perfect_immunity_counter, death_marker, weekly_infection_counter) {
   
+  #Create lists (N = 10,000,000) to store each individual's 
+  #     i) protection (severe; nonsevere); default protection is 1 
+  #     ii) beta (age-specific relative incidence adjustment)
+  #     iii) severe multipliers (age-specific and immune status-specific)
+  
   severe_pe <- rep(1, length(age))
   nonsevere_pe <- rep(1, length(age))
   beta <- rep(0, length(age))
   severe_multiplier_with_adj <- rep(1, length(age))
   
-  #Creating a df of individuals eligible for infection to merge with waning_data_clean to get protection at specific time point
+  #Creating a df of individuals eligible for infection to merge with waning data to get each individual's 
+  #protection at specific time point
   index_individuals_eligible <- which(perfect_immunity_counter == 0 & death_marker == 0)
   df_individuals_eligible <- data.table(index_individual = index_individuals_eligible,
                                         age_group = age[index_individuals_eligible],
@@ -22,21 +28,23 @@ outcome_occurrence <- function(age, inf, time, immuno, doses, lambda, perfect_im
                                         weeks = time[index_individuals_eligible],
                                         key = c("age_group", "prior_inf", "immunocompromised", "weeks"))
   
+  #Merging with waning data and severe infection multiplier and beta data
   df_protection <- (df_individuals_eligible[waning_data_clean, 
                                             on=c("age_group", "prior_inf", "immunocompromised", "weeks"), 
                                             nomatch = NULL])[severe_infection_multipliers, on = c("age_group", "immunocompromised"), nomatch = NULL] %>% arrange(index_individual)
   
-  print(df_protection %>% filter(index_individual == 9077775))
-  
+  #Immune-naive individuals (unvaccinated; no prior infection) should have no protection
   df_protection$severe_ve_pred[df_protection$num_doses == "unvax" & df_protection$prior_inf == 0] <- 0
   df_protection$nonsevere_ve_pred[df_protection$num_doses == "unvax" & df_protection$prior_inf == 0] <- 0
+  
+  #Update lists for individuals eligible for infection
   severe_pe[index_individuals_eligible] <- df_protection$severe_ve_pred
   nonsevere_pe[index_individuals_eligible] <- df_protection$nonsevere_ve_pred
   beta[index_individuals_eligible] <- df_protection$beta
   severe_multiplier_with_adj[index_individuals_eligible] <- df_protection$multiplier/df_protection$multiplier_adj
   
+  #Calculate risk (severe; nonsevere)
   nonsevere_risk <- lambda * (1 - nonsevere_pe) * beta * (weekly_infection_counter/length(age))
-  
   severe_risk <- lambda * (1 - severe_pe) * beta * (weekly_infection_counter/length(age)) * severe_multiplier_with_adj
   
   #if nonsevere or severe risk > 1, set to 1
@@ -56,6 +64,7 @@ outcome_occurrence <- function(age, inf, time, immuno, doses, lambda, perfect_im
 #Additional vaccinations are assigned inside the vaccination intervention functions.
 
 realistic_vax_assignment <- function(df){
+  
   #Assign who is getting vaccinated using age-specific coverage rates
   vax_assignment <- df %>% mutate(vax = 0)
   
@@ -64,10 +73,12 @@ realistic_vax_assignment <- function(df){
   age_65_plus_index <- which((vax_assignment$age_group == "65-74 years" | vax_assignment$age_group == "75+ years") & vax_assignment$num_doses != "unvax")
   immunocompromised_index <- which(vax_assignment$age_group != "0-17 years" & vax_assignment$immunocompromised %in% c(1, 2)  & vax_assignment$num_doses != "unvax")
   
+  #NOTE: For the vax assignment for the age groups (18-49 years, 50-64 years, 65+ years), I'm adding an adjustment to total assigned to account for 
+  #      vax assignment for the immunocompromised group
   vax_assignment$vax[age_18_49_index] <- rbinom(length(age_18_49_index), 1, 0.17 * length(which(vax_assignment$age_group == "18-49 years" & vax_assignment$num_doses != "unvax" & vax_assignment$immunocompromised == 0)) / length(age_18_49_index))
   vax_assignment$vax[age_50_64_index] <- rbinom(length(age_50_64_index), 1, 0.28 * length(which(vax_assignment$age_group == "50-64 years" & vax_assignment$num_doses != "unvax" & vax_assignment$immunocompromised == 0)) / length(age_50_64_index))
   vax_assignment$vax[age_65_plus_index] <- rbinom(length(age_65_plus_index), 1, 0.45 * length(which(vax_assignment$age_group %in% c("65-74 years", "75+ years") & vax_assignment$num_doses != "unvax" & vax_assignment$immunocompromised == 0)) / length(age_65_plus_index))
-  vax_assignment$vax[immunocompromised_index] <- rbinom(length(immunocompromised_index), 1, 0.6 )
+  vax_assignment$vax[immunocompromised_index] <- rbinom(length(immunocompromised_index), 1, 0.6)
   
   print(paste0("Percentage of 18-49 years receiving vaccinated: ", length(which(vax_assignment$age_group == "18-49 years" & vax_assignment$num_doses != "unvax" & vax_assignment$vax == 1))/length(age_18_49_index)))
   print(paste0("Percentage of 50-64 years receiving vaccinated: ",  length(which(vax_assignment$age_group == "50-64 years" & vax_assignment$num_doses != "unvax" & vax_assignment$vax == 1))/length(age_50_64_index)))
@@ -86,9 +97,11 @@ optimistic_vax_assignment <- function(df){
   age_65_plus_index <- which((vax_assignment$age_group == "65-74 years" | vax_assignment$age_group == "75+ years") & vax_assignment$num_doses != "unvax")
   immunocompromised_index <- which(vax_assignment$age_group != "0-17 years" & vax_assignment$immunocompromised %in% c(1, 2)  & vax_assignment$num_doses != "unvax")
   
+  #NOTE: For the vax assignment for the age groups (18-49 years, 50-64 years, 65+ years), I'm adding an adjustment to total assigned to account for 
+  #      vax assignment for the immunocompromised group
   vax_assignment$vax[age_18_49_index] <- rbinom(length(age_18_49_index), 1, 0.3 * length(which(vax_assignment$age_group == "18-49 years" & vax_assignment$num_doses != "unvax" & vax_assignment$immunocompromised == 0)) / length(age_18_49_index))
   vax_assignment$vax[age_50_64_index] <- rbinom(length(age_50_64_index), 1, 0.4 * length(which(vax_assignment$age_group == "50-64 years" & vax_assignment$num_doses != "unvax" & vax_assignment$immunocompromised == 0)) / length(age_50_64_index))
-  vax_assignment$vax[age_65_plus_index] <- rbinom(length(age_65_plus_index), 1, 0.7 )#* length(which(vax_assignment$age_group %in% c("65-74 years", "75+ years") & vax_assignment$num_doses != "unvax" & vax_assignment$immunocompromised == 0)) / length(age_65_plus_index))
+  vax_assignment$vax[age_65_plus_index] <- rbinom(length(age_65_plus_index), 1, 0.7 * length(which(vax_assignment$age_group %in% c("65-74 years", "75+ years") & vax_assignment$num_doses != "unvax" & vax_assignment$immunocompromised == 0)) / length(age_65_plus_index))
   vax_assignment$vax[immunocompromised_index] <- rbinom(length(immunocompromised_index), 1, 0.7)
   
   print(paste0("Percentage of 18-49 years receiving vaccinated: ", length(which(vax_assignment$age_group == "18-49 years" & vax_assignment$num_doses != "unvax" & vax_assignment$vax == 1))/length(age_18_49_index)))
@@ -101,24 +114,20 @@ optimistic_vax_assignment <- function(df){
 ########################################################################################################################
 noBoosterSimulation <- function(df, first_week_infections = total_infections){
   
-  #Store severe and nonsevere outcome counts in df
-  grouped_outcome_counts <- clean_df[[1]] %>% group_by(age_group, immunocompromised) %>% summarise(total_pop = n())
+  #Store aggregated severe and nonsevere outcome counts in df
+  grouped_outcome_counts <- df %>% group_by(age_group, immunocompromised) %>% summarise(total_pop = n())
   grouped_outcome_counts[sprintf("week%s",(1:104))] <- NA
   grouped_outcome_counts[sprintf("nonsevere_week%s",(1:104))] <- NA
   
-  #Input data (entire pop)
-  averted <- clean_df[[1]] %>% arrange(individual)
-  averted[sprintf("week%s",(1))] <- NA
-  averted[sprintf("nonsevere_week%s",(1))] <- NA
-  # averted['total_deaths'] <- 0
-  # averted['total_hosps'] <- 0
-  age_info <- averted$age_group
-  averted['perc_death'] <- (data.table(averted)[hosp_death_age_stratified, 
+  #Input data (entire pop; N = 10,000,000)
+  input <- df %>% arrange(individual)
+  input[sprintf("week%s",(1))] <- NA
+  input[sprintf("nonsevere_week%s",(1))] <- NA
+  age_info <- input$age_group
+  input['perc_death'] <- (data.table(input)[hosp_death_age_stratified, 
                                                     on=c("age_group"), 
                                                     nomatch = NULL] %>% arrange(individual))$perc_death
     
-  input<- averted
-  
   #Population's info (age_group, num_doses, prior_inf, etc.) at each timestep
   age <- as.character(input$age_group)
   doses <- as.character(input$num_doses)
@@ -131,7 +140,7 @@ noBoosterSimulation <- function(df, first_week_infections = total_infections){
   prob_death <- input$perc_death
   perfect_immunity_counter <- rep(0,nrow(input)) #If non-death infection occurs, counting down perfect immunity weeks
   index_recent_infection <- which(inf == 1 & time_since_last < 13 & time_since_last < time_since_last_dose) #Individuals infected in 3 months preceding start of sim have perfect immunity at start
-  perfect_immunity_counter[index_recent_infection] <- 14 - time_since_last[index_recent_infection] #REVISIT
+  perfect_immunity_counter[index_recent_infection] <- 14 - time_since_last[index_recent_infection] 
   death_marker <- rep(0,nrow(input)) #If death occurs
   hosp_count <- rep(0, nrow(input))
   death_count <- rep(0, nrow(input))
@@ -139,7 +148,8 @@ noBoosterSimulation <- function(df, first_week_infections = total_infections){
   weekly_infection_counter <- first_week_infections
   
   #Iterate through each time step
-  for (i in (1)) {
+  #NOTE:  For calibration check, only results at 1st timestep are relevant
+  for (i in (1:104)) {
     
     print(i) 
     time_since_last[time_since_last >= 104] <- 104     #Assuming that >24 month waning is same as 24 month waning pe
@@ -196,7 +206,6 @@ noBoosterSimulation <- function(df, first_week_infections = total_infections){
     grouped_outcome_counts[, i + 107] <- grouped_outcomes$total_nonsevere
     
   }
-  
   return(grouped_outcome_counts)
 }
 
@@ -204,7 +213,7 @@ oneBoosterSimulation <- function(df, first_week_infections = total_infections){
   #Assign who is getting vaccinated using age-specific coverage rates
   vax_assignment <- df 
   
-  #Store severe and nonsevere outcome counts in df
+  #Store aggregated severe and nonsevere outcome counts among those who receive a vaccine dose in df
   grouped_outcome_counts <- vax_assignment %>% filter(vax == 1) %>% group_by(age_group, immunocompromised) %>% summarise(total_pop = n())
   grouped_outcome_counts[sprintf("week%s",(1:104))] <- NA
   grouped_outcome_counts[sprintf("nonsevere_week%s",(1:104))] <- NA
@@ -229,14 +238,14 @@ oneBoosterSimulation <- function(df, first_week_infections = total_infections){
   prob_death <- input$perc_death
   perfect_immunity_counter <- rep(0,nrow(input)) #If non-death infection occurs, counting down perfect immunity weeks
   index_recent_infection <- which(inf == 1 & time_since_last < 13 & time_since_last < time_since_last_dose) #Individuals infected in 3 months preceding start of sim have perfect immunity at start
-  perfect_immunity_counter[index_recent_infection] <- 14 - time_since_last[index_recent_infection] #REVISIT
+  perfect_immunity_counter[index_recent_infection] <- 14 - time_since_last[index_recent_infection] 
   death_marker <- rep(0,nrow(input)) #If death occurs
   hosp_count <- rep(0, nrow(input))
   death_count <- rep(0, nrow(input))
   weeks <- c(1:104)
-  to_vaccinate_index <- which(input$vax == 1)
+  to_vaccinate_index <- which(input$vax == 1) #index for those who will receive vaccine booster intervention (assigned with vax_assignment function earlier)
   vaccine_wave <- rep(0, nrow(input))
-  vaccine_wave[to_vaccinate_index] <- sample(c(1:13), length(to_vaccinate_index), replace = TRUE)
+  vaccine_wave[to_vaccinate_index] <- sample(c(1:13), length(to_vaccinate_index), replace = TRUE) #distributing boosters over 13-week (3-month) window 
   weekly_infection_counter <- first_week_infections
   
   #Iterate through each time step
@@ -248,7 +257,6 @@ oneBoosterSimulation <- function(df, first_week_infections = total_infections){
       vaccine_wave_index <- which(vaccine_wave == i-1 & input$vax == 1)
       time_since_last[vaccine_wave_index] <- 1
     } 
-    
     
     time_since_last[time_since_last >= 104] <- 104     #Assuming that >24 month waning is same as 24 month waning pe
     week <- weeks[time_since_last]
@@ -299,6 +307,7 @@ oneBoosterSimulation <- function(df, first_week_infections = total_infections){
     input$week1 <- severe_outcomes
     input$nonsevere_week1 <- nonsevere_outcomes
     
+    #Only looking at the outcomes of population who received vaccine booster intervention (for easier comparison to main analysis)
     grouped_outcomes <- input %>% filter(vax == 1) %>% group_by(age_group, immunocompromised) %>% summarise(total_severe = sum(week1),
                                                                                                             total_nonsevere = sum(nonsevere_week1))
     grouped_outcome_counts[, i + 3] <- grouped_outcomes$total_severe
@@ -313,7 +322,7 @@ annualBoosterSimulation <- function(df, first_week_infections = total_infections
   #Assign who is getting vaccinated using age-specific coverage rates
   vax_assignment <- df 
   
-  #Store severe and nonsevere outcome counts in df
+  #Store aggregated severe and nonsevere outcome counts among those who receive a vaccine dose in df
   grouped_outcome_counts <- vax_assignment %>% filter(vax == 1) %>% group_by(age_group, immunocompromised) %>% summarise(total_pop = n())
   grouped_outcome_counts[sprintf("week%s",(1:104))] <- NA
   grouped_outcome_counts[sprintf("nonsevere_week%s",(1:104))] <- NA
@@ -326,7 +335,6 @@ annualBoosterSimulation <- function(df, first_week_infections = total_infections
   input['perc_death'] <- (data.table(input)[hosp_death_age_stratified, 
                                             on=c("age_group"), 
                                             nomatch = NULL] %>% arrange(individual))$perc_death  
-  
   #Population's info (age_group, num_doses, prior_inf, etc.) at each timestep
   age <- as.character(input$age_group)
   doses <- as.character(input$num_doses)
@@ -339,14 +347,14 @@ annualBoosterSimulation <- function(df, first_week_infections = total_infections
   prob_death <- input$perc_death
   perfect_immunity_counter <- rep(0,nrow(input)) #If non-death infection occurs, counting down perfect immunity weeks
   index_recent_infection <- which(inf == 1 & time_since_last < 13 & time_since_last < time_since_last_dose) #Individuals infected in 3 months preceding start of sim have perfect immunity at start
-  perfect_immunity_counter[index_recent_infection] <- 14 - time_since_last[index_recent_infection] #REVISIT
+  perfect_immunity_counter[index_recent_infection] <- 14 - time_since_last[index_recent_infection] 
   death_marker <- rep(0,nrow(input)) #If death occurs
   hosp_count <- rep(0, nrow(input))
   death_count <- rep(0, nrow(input))
   weeks <- c(1:104)
-  to_vaccinate_index <- which(input$vax == 1)
+  to_vaccinate_index <- which(input$vax == 1) #index for those who will receive vaccine booster intervention (assigned with vax_assignment function earlier)
   vaccine_wave <- rep(0, nrow(input))
-  vaccine_wave[to_vaccinate_index] <- sample(c(1:13), length(to_vaccinate_index), replace = TRUE)
+  vaccine_wave[to_vaccinate_index] <- sample(c(1:13), length(to_vaccinate_index), replace = TRUE) #distributing boosters over 13-week (3-month) window 
   weekly_infection_counter <- first_week_infections
   
   #Iterate through each time step
@@ -409,6 +417,7 @@ annualBoosterSimulation <- function(df, first_week_infections = total_infections
     input$week1 <- severe_outcomes
     input$nonsevere_week1 <- nonsevere_outcomes
     
+    #Only looking at the outcomes of population who received vaccine booster intervention (for easier comparison to main analysis)
     grouped_outcomes <- input %>% filter(vax == 1) %>% group_by(age_group, immunocompromised) %>% summarise(total_severe = sum(week1),
                                                                                                             total_nonsevere = sum(nonsevere_week1))
     grouped_outcome_counts[, i + 3] <- grouped_outcomes$total_severe
@@ -423,7 +432,7 @@ biannualBoosterSimulation <- function(df, first_week_infections = total_infectio
   #Assign who is getting vaccinated using age-specific coverage rates
   vax_assignment <- df 
   
-  #Store severe and nonsevere outcome counts in df
+  #Store aggregated severe and nonsevere outcome counts among those who receive a vaccine dose in df
   grouped_outcome_counts <- vax_assignment %>% filter(vax == 1) %>% group_by(age_group, immunocompromised) %>% summarise(total_pop = n())
   grouped_outcome_counts[sprintf("week%s",(1:104))] <- NA
   grouped_outcome_counts[sprintf("nonsevere_week%s",(1:104))] <- NA
@@ -436,7 +445,6 @@ biannualBoosterSimulation <- function(df, first_week_infections = total_infectio
   input['perc_death'] <- (data.table(input)[hosp_death_age_stratified, 
                                             on=c("age_group"), 
                                             nomatch = NULL] %>% arrange(individual))$perc_death  
-  
   #Population's info (age_group, num_doses, prior_inf, etc.) at each timestep
   age <- as.character(input$age_group)
   doses <- as.character(input$num_doses)
@@ -449,14 +457,14 @@ biannualBoosterSimulation <- function(df, first_week_infections = total_infectio
   prob_death <- input$perc_death
   perfect_immunity_counter <- rep(0,nrow(input)) #If non-death infection occurs, counting down perfect immunity weeks
   index_recent_infection <- which(inf == 1 & time_since_last < 13 & time_since_last < time_since_last_dose) #Individuals infected in 3 months preceding start of sim have perfect immunity at start
-  perfect_immunity_counter[index_recent_infection] <- 14 - time_since_last[index_recent_infection] #REVISIT
+  perfect_immunity_counter[index_recent_infection] <- 14 - time_since_last[index_recent_infection] 
   death_marker <- rep(0,nrow(input)) #If death occurs
   hosp_count <- rep(0, nrow(input))
   death_count <- rep(0, nrow(input))
   weeks <- c(1:104)
-  to_vaccinate_index <- which(input$vax == 1)
+  to_vaccinate_index <- which(input$vax == 1) #index for those who will receive vaccine booster intervention (assigned with vax_assignment function earlier)
   vaccine_wave <- rep(0, nrow(input))
-  vaccine_wave[to_vaccinate_index] <- sample(c(1:13), length(to_vaccinate_index), replace = TRUE)
+  vaccine_wave[to_vaccinate_index] <- sample(c(1:13), length(to_vaccinate_index), replace = TRUE) #distributing boosters over 13-week (3-month) window 
   weekly_infection_counter <- first_week_infections
   
   #Iterate through each time step
@@ -519,6 +527,7 @@ biannualBoosterSimulation <- function(df, first_week_infections = total_infectio
     input$week1 <- severe_outcomes
     input$nonsevere_week1 <- nonsevere_outcomes
     
+    #Only looking at the outcomes of population who received vaccine booster intervention (for easier comparison to main analysis)
     grouped_outcomes <- input %>% filter(vax == 1) %>% group_by(age_group, immunocompromised) %>% summarise(total_severe = sum(week1),
                                                                                                             total_nonsevere = sum(nonsevere_week1))
     grouped_outcome_counts[, i + 3] <- grouped_outcomes$total_severe

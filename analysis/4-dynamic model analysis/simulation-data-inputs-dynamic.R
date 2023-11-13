@@ -7,20 +7,35 @@
 hosp_death_age_stratified <- data.table(read.csv("data/clean-data/hosp_death_age_stratified_counts_adj.csv")[,-1]) %>%
   add_row(age_group = "0-17 years", num_hosp = 0, num_death = 0, perc_death = 0.01666344)
 
-average_nonsevere_incidence <- data.frame(age_group = c("0-17 years","18-49 years", "50-64 years", "65-74 years", "75+ years"),
-                                          avg_inc = c(.00008/5,.00008, .00016, .00041, .00113)/4.345 * c(1000,200, 79.6, 22.6, 9.6) * 2.5) %>%
-  mutate(beta = avg_inc/min(avg_inc))
+avg_incidence_data <- read.csv("data/clean-data/monthly-incidence-estimates.csv")[,-1]
 
-average_severe_incidence <- data.frame(age_group = c("0-17 years","18-49 years", "50-64 years", "65-74 years", "75+ years"),
-                                       avg_inc = c(.00008/5,.00008, .00016, .00041, .00113)/4.345)
-severe_waning_data <- read.csv("ve model results/weekly/combined_severe_waning_predictions_weekly.csv")[,-1]
-nonsevere_waning_data <- read.csv("ve model results/weekly/combined_nonsevere_waning_predictions_weekly.csv")[,-1] ##CHANGE HERE 
+#Adjust the monthly severe incidence estimates to weekly non-severe incidence estimates
+average_nonsevere_incidence <- avg_incidence_data %>%
+  #adding the 0-17 year age group, assuming that average severe incidence is 5x less than 18-49 year incidence
+  add_row(age_group = "0-17 years", avg_inc = 0.00008/5) %>% 
+  arrange(age_group) %>%
+  #convert monthly incidence to weekly incidence (dividing by 4.345)
+  #apply age-specific nonsevere infection multipliers (this is the c(1000,200,79.6,22.6,9.6))
+  #apply additional nonsevere case multplier for better calibration (this is the 2.5x multiplier)
+  mutate(avg_inc = (avg_inc/4.345) * c(1000,200, 79.6, 22.6, 9.6) * 2.5,
+         beta = avg_inc/min(avg_inc))
+
+average_severe_incidence <- avg_incidence_data %>%
+  #adding the 0-17 year age group, assuming that average severe incidence is 5x less than 18-49 year incidence
+  add_row(age_group = "0-17 years", avg_inc = 0.00008/5) %>% 
+  arrange(age_group) %>%
+  #convert monthly incidence to weekly incidence (dividing by 4.345)
+  mutate(avg_inc = avg_inc/4.345,
+         beta = avg_inc/min(avg_inc))
+
+severe_waning_data <- read.csv("results/waning-predictions/dynamic/combined_severe_waning_predictions_weekly.csv")[,-1]
+nonsevere_waning_data <- read.csv("results/waning-predictions/dynamic/combined_nonsevere_waning_predictions_weekly.csv")[,-1] ##CHANGE HERE 
 
 
 #MAKE SURE YOU ARE SETTING THE CORRECT WANING CURVE FOR CALIBRATION 
-severe_waning <- severe_waning_data %>% filter(estimate == 'lower') %>% dplyr::select(-c(study, estimate, month_input, months)) %>%
+severe_waning <- severe_waning_data %>% filter(estimate == waning) %>% dplyr::select(-c(study, estimate, month_input, months)) %>%
   rowwise() %>% mutate(severe_ve_pred = max(ve_pred, 0))
-nonsevere_waning <- nonsevere_waning_data %>% filter(estimate == 'lower') %>% dplyr::select(-c(estimate, month_input, months)) %>%
+nonsevere_waning <- nonsevere_waning_data %>% filter(estimate == waning) %>% dplyr::select(-c(estimate, month_input, months)) %>%
   rowwise() %>% mutate(nonsevere_ve_pred = max(ve_pred, 0))
 
 waning_data_clean <- setDT(merge(severe_waning, nonsevere_waning, by = c("age_group", "prior_inf", "immunocompromised", "weeks")) %>%
@@ -28,7 +43,7 @@ waning_data_clean <- setDT(merge(severe_waning, nonsevere_waning, by = c("age_gr
 
 
 #MAKE SURE YOU ARE READING IN THE CORRECT CALIBRATION FILE
-entire_pop <-  read.csv("calibration/dynamic/entire_population_calibration_nonsevere2.5x_lower.csv")[,-1] 
+entire_pop <-  read.csv(paste0("calibration/dynamic/entire_population_calibration_nonsevere2.5x_", waning, ".csv"))[,-1] 
 
 total_infections <- ceiling(sum((merge(entire_pop %>% group_by(age_group) %>% summarise(total = n()),
                                        average_nonsevere_incidence, by = "age_group", all.x = TRUE) %>% 
