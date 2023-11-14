@@ -14,7 +14,7 @@ Data sources used for this analysis is publicly available.
   * `3-main analysis`: contains code for running different frequencies of booster vaccination (no booster, one-time booster, annual booster, semiannual booster) over a two year time horizon
   * `4-dynamic model analysis`: contains code for running different frequencies of booster vaccination using a dynamic transmission model
   *  `5-variant scenario analysis`: contains code for running different frequencies of booster vaccination under various novel variant scenarios
-  *  `6-sensitivity analysis`: contains code for running different frequencies of booster vaccination under varying assumptions and scenarios
+  *  `6-sensitivity analysis`: contains code for running different frequencies of booster vaccination under varying assumptions and scenarios (five year simulation; delayed vaccine administration, lower vaccine effectiveness after 1st dose)
   *  `7-model validation`: contains code for running a model validation over a 3-month period
   *  `8-data cleaning`: contains all code needed for initial cleaning of data
 * `results`: contains results for waning model predictions, calibration, and unprocessed simulation outputs
