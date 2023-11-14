@@ -1,5 +1,5 @@
 ###################################################################################################
-#Title: Interventions - Variant Analysis S1 (New variant at start of 2-year sim)
+#Title: Interventions - Variant Analysis S3 (Annual novel variant throughout 2-year sim)
 #Author: Hailey Park
 #Date: Septemeber 25, 2023
 ###################################################################################################
@@ -30,20 +30,19 @@ outcome_occurrence <- function(age, inf, time, lambda, perfect_immunity_counter,
   nonsevere_pe[intersect(index_individuals_eligible, index_new_variant)] <- (df_protection %>% filter(new_variant == 1))$new_nonsevere_ve_pred
   nonsevere_pe[intersect(index_individuals_eligible, index_old_variant)] <- (df_protection %>% filter(new_variant == 0))$old_nonsevere_ve_pred
   
-  
-  print(paste0("New Variant Marker: ", new_variant_marker[546]))
-  print(paste0("Severe PE: ", severe_pe[546]))
-  print(paste0("Nonsevere PE: ", nonsevere_pe[546]))
+  # #spot-checking
+  # print(paste0("New Variant Marker: ", new_variant_marker[546]))
+  # print(paste0("Severe PE: ", severe_pe[546]))
+  # print(paste0("Nonsevere PE: ", nonsevere_pe[546]))
   
   severe_risk <- lambda * (1 - severe_pe)
   
-  nonsevere_multiplier <- (nonsevere_infection_multipliers %>% filter(age_group == age[1]))$multiplier #/ 2.8 #CHANGE HERE
+  nonsevere_multiplier <- (nonsevere_infection_multipliers %>% filter(age_group == age[1]))$multiplier / 2.8 
   nonsevere_multiplier_adj <- (nonsevere_infection_multipliers %>% filter(age_group == age[1]))$multiplier_adjustment
   nonsevere_risk <- lambda * (1 - nonsevere_pe) * nonsevere_multiplier/nonsevere_multiplier_adj
   return(list(rbinom(length(severe_risk), 1, severe_risk), rbinom(length(nonsevere_risk), 1, nonsevere_risk)))
 }
 
-set.seed(88)
 
 ###########################################################################################
 
@@ -57,7 +56,8 @@ noBoosterSimulation <- function(df){
   averted['total_hosps'] <- 0
   age_info <- averted$age_group[1]
   averted['perc_death'] <- (hosp_death_age_stratified %>% filter(age_group == age_info))$perc_death
-  averted['variant_wave'] <- sample(c(1:3), nrow(averted), replace = TRUE)
+  averted['variant_wave'] <- sample(c(1:3), nrow(averted), replace = TRUE) #3-month introduction of novel variant #1
+  averted['variant_wave_2'] <- sample(c(1:3), nrow(averted), replace = TRUE) #3-month introduction of novel variant #2
   
   input<- averted
   
@@ -71,21 +71,34 @@ noBoosterSimulation <- function(df){
   prob_death <- input$perc_death
   perfect_immunity_counter <- rep(0,nrow(input)) #If non-death infection occurs, counting down perfect immunity months
   index_recent_infection <- which(inf == 1 & time_since_last < 3 & time_since_last < time_since_last_dose) #Individuals infected in 3 months preceding start of sim have perfect immunity at start
-  perfect_immunity_counter[index_recent_infection] <- 4 - time_since_last[index_recent_infection] #REVISIT
+  perfect_immunity_counter[index_recent_infection] <- 4 - time_since_last[index_recent_infection] 
   death_marker <- rep(0,nrow(input)) #If death occurs
   hosp_count <- rep(0, nrow(input))
   death_count <- rep(0, nrow(input))
   new_variant_marker <- rep(0,nrow(input)) #New variant is introduced in waves, where new variant has worsened waning protection
   variant_wave <- input$variant_wave
+  variant_wave_2 <- input$variant_wave_2
   months <- c(1:24)
   
   #Iterate through each time step
   for (i in (1:25)) {
     
-    #Staggering variant introduction over 3-month window 
-    if(i %in% c(14:16)){
-      variant_wave_index <- which(variant_wave == i - 13)
+    #Staggering first variant introduction over 3-month window 
+    if(i %in% c(2:4)){
+      variant_wave_index <- which(variant_wave == i - 1)
       new_variant_marker[variant_wave_index] <- 1
+    } 
+    
+    #Staggering second variant introduction over 3-month window 
+    #NOTE:  Before the 2nd novel variant is introduced, all individuals are already on the reduced waning curves 
+    #       from the 1st novel variant, except those who got infected during novel variant period (inf = 2) and 
+    #       their hybrid immunity is bumped up to improved curves. When the 2nd novel variant is introduced,
+    #       everyone already on the reduced waning curves remain on the reduced waning curves. Only those with the
+    #       improved hybrid immunity (inf = 2) are bumped down to reduced hybrid immunity curves (inf = 1).
+    #       
+    if(i %in% c(14:16)){
+      variant_wave_prior_inf_index <- which(variant_wave_2 == i - 13 & inf == 2)
+      inf[variant_wave_prior_inf_index] <- 1
     } 
     
     time_since_last[time_since_last >= 24] <- 24     #Assuming that >24 month waning is same as 24 month waning pe
@@ -108,8 +121,8 @@ noBoosterSimulation <- function(df){
     #change their prior infection status to 1/2, time since last to 1, perfect immunity counter to 3
     index_outcome <- which(severe_outcomes == 1 | nonsevere_outcomes == 1)
     index_no_new_variant <- which(new_variant_marker == 0)
-    inf[intersect(index_outcome, which(new_variant_marker == 1))] <- 2
-    inf[intersect(index_outcome, index_no_new_variant)] <- 1
+    inf[intersect(index_outcome, which(new_variant_marker == 1))] <- 2 #If individual gets infected during novel variant period, then hybrid immunity curve is back to original hybrid immunity curve
+    inf[intersect(index_outcome, index_no_new_variant)] <- 1 #If individual gets infected not during novel variant period, keep inf at 1
     time_since_last[index_outcome] <- 1
     perfect_immunity_counter[index_outcome] <- 3
     
@@ -142,12 +155,7 @@ noBoosterSimulation <- function(df){
   return(list(colSums(input[, (8:57)]),
               sum(colSums((input %>% filter(prior_inf == 1))[, (8:32)])),
               sum(colSums((input %>% filter(prior_inf == 0))[, (8:32)]))))
-  #write.csv(colSums(input[, (8:57)]), paste0("simulation-results/updated model/variant-analysis/S1/noBooster-", age_info, "-mean.csv"))
 }
-
-# set.seed(88)
-# clean_df %>% lapply(noBoosterSimulation)
-
 
 oneBoosterSimulation <- function(df){
   
@@ -159,8 +167,9 @@ oneBoosterSimulation <- function(df){
   averted['total_hosps'] <- 0
   age_info <- averted$age_group[1]
   averted['perc_death'] <- (hosp_death_age_stratified %>% filter(age_group == age_info))$perc_death
-  averted['vaccine_wave'] <- sample(c(1:3), nrow(averted), replace = TRUE)
-  averted['variant_wave'] <- sample(c(1:3), nrow(averted), replace = TRUE)
+  averted['vaccine_wave'] <- sample(c(1:3), nrow(averted), replace = TRUE) #Vaccine distributed over 3-month period
+  averted['variant_wave'] <- sample(c(1:3), nrow(averted), replace = TRUE) #3-month introduction of novel variant #1
+  averted['variant_wave_2'] <- sample(c(1:3), nrow(averted), replace = TRUE) #3-month introduction of novel variant #2
   
   input<- averted
   
@@ -174,7 +183,7 @@ oneBoosterSimulation <- function(df){
   prob_death <- input$perc_death
   perfect_immunity_counter <- rep(0,nrow(input)) #If non-death infection occurs, counting down perfect immunity months
   index_recent_infection <- which(inf == 1 & time_since_last < 3 & time_since_last < time_since_last_dose) #Individuals infected in 3 months preceding start of sim have perfect immunity at start
-  perfect_immunity_counter[index_recent_infection] <- 4 - time_since_last[index_recent_infection] #REVISIT
+  perfect_immunity_counter[index_recent_infection] <- 4 - time_since_last[index_recent_infection] 
   death_marker <- rep(0,nrow(input)) #If death occurs
   hosp_count <- rep(0, nrow(input))
   death_count <- rep(0, nrow(input))
@@ -182,16 +191,28 @@ oneBoosterSimulation <- function(df){
   months <- c(1:24)
   vaccine_wave <- input$vaccine_wave
   variant_wave <- input$variant_wave
+  variant_wave_2 <- input$variant_wave_2
   #average_pe <- rep(0, length(months))
   
   #Iterate through each time step
   for (i in (1:25)) {
     print(i)
     
-    #Staggering variant introduction over 3-month window 
-    if(i %in% c(14:16)){
-      variant_wave_index <- which(variant_wave == i - 13)
+    #Staggering first variant introduction over 3-month window 
+    if(i %in% c(2:4)){
+      variant_wave_index <- which(variant_wave == i - 1)
       new_variant_marker[variant_wave_index] <- 1
+    } 
+    
+    #Staggering second variant introduction over 3-month window 
+    #NOTE:  Before the 2nd novel variant is introduced, all individuals are already on the reduced waning curves 
+    #       from the 1st novel variant, except those who got infected during novel variant period (inf = 2) and 
+    #       their hybrid immunity is bumped up to improved curves. When the 2nd novel variant is introduced,
+    #       everyone already on the reduced waning curves remain on the reduced waning curves. Only those with the
+    #       improved hybrid immunity (inf = 2) are bumped down to reduced hybrid immunity curves (inf = 1).
+    if(i %in% c(14:16)){
+      variant_wave_prior_inf_index <- which(variant_wave_2 == i - 13 & inf == 2)
+      inf[variant_wave_prior_inf_index] <- 1
     } 
     
     #Staggering vaccination over 3-month window 
@@ -220,8 +241,8 @@ oneBoosterSimulation <- function(df){
     #change their prior infection status to 1/2, time since last to 1, perfect immunity counter to 3
     index_outcome <- which(severe_outcomes == 1 | nonsevere_outcomes == 1)
     index_no_new_variant <- which(new_variant_marker == 0)
-    inf[intersect(index_outcome, which(new_variant_marker == 1))] <- 2
-    inf[intersect(index_outcome, index_no_new_variant)] <- 1
+    inf[intersect(index_outcome, which(new_variant_marker == 1))] <- 2 #If individual gets infected during novel variant period, then hybrid immunity curve is back to original hybrid immunity curve
+    inf[intersect(index_outcome, index_no_new_variant)] <- 1 #If individual gets infected not during novel variant period, keep inf at 1
     time_since_last[index_outcome] <- 1
     perfect_immunity_counter[index_outcome] <- 3
     
@@ -255,12 +276,7 @@ oneBoosterSimulation <- function(df){
   return(list(colSums(input[, (8:57)]), 
               sum(colSums((input %>% filter(prior_inf == 1))[, (8:32)])), 
               sum(colSums((input %>% filter(prior_inf == 0))[, (8:32)]))))
-  #write.csv(colSums(input[, (8:55)]), paste0("simulation-results/updated model/95ui/waning-upper/sero-upper/case-lower/1Booster-", age_info, "-mean.csv")) ####CHANGE HERE
 }
-
-# set.seed(88)
-# clean_df %>% lapply(oneBoosterSimulation)
-
 
 annualBoosterSimulation <- function(df){
   
@@ -272,8 +288,9 @@ annualBoosterSimulation <- function(df){
   averted['total_hosps'] <- 0
   age_info <- averted$age_group[1]
   averted['perc_death'] <- (hosp_death_age_stratified %>% filter(age_group == age_info))$perc_death
-  averted['vaccine_wave'] <- sample(c(1:3), nrow(averted), replace = TRUE)
-  averted['variant_wave'] <- sample(c(1:3), nrow(averted), replace = TRUE)
+  averted['vaccine_wave'] <- sample(c(1:3), nrow(averted), replace = TRUE) #Vaccine distributed over 3-month period
+  averted['variant_wave'] <- sample(c(1:3), nrow(averted), replace = TRUE) #3-month introduction of novel variant #1
+  averted['variant_wave_2'] <- sample(c(1:3), nrow(averted), replace = TRUE) #3-month introduction of novel variant #2
   
   input<- averted
   
@@ -287,7 +304,7 @@ annualBoosterSimulation <- function(df){
   prob_death <- input$perc_death
   perfect_immunity_counter <- rep(0,nrow(input)) #If non-death infection occurs, counting down perfect immunity months
   index_recent_infection <- which(inf == 1 & time_since_last < 3 & time_since_last < time_since_last_dose) #Individuals infected in 3 months preceding start of sim have perfect immunity at start
-  perfect_immunity_counter[index_recent_infection] <- 4 - time_since_last[index_recent_infection] #REVISIT
+  perfect_immunity_counter[index_recent_infection] <- 4 - time_since_last[index_recent_infection] 
   death_marker <- rep(0,nrow(input)) #If death occurs
   hosp_count <- rep(0, nrow(input))
   death_count <- rep(0, nrow(input))
@@ -295,14 +312,26 @@ annualBoosterSimulation <- function(df){
   months <- c(1:24)
   vaccine_wave <- input$vaccine_wave
   variant_wave <- input$variant_wave
+  variant_wave_2 <- input$variant_wave_2
   
   #Iterate through each time step
   for (i in (1:25)) {
     
-    #Staggering variant introduction over 3-month window 
-    if(i %in% c(14:16)){
-      variant_wave_index <- which(variant_wave == i - 13)
+    #Staggering first variant introduction over 3-month window 
+    if(i %in% c(2:4)){
+      variant_wave_index <- which(variant_wave == i - 1)
       new_variant_marker[variant_wave_index] <- 1
+    } 
+    
+    #Staggering second variant introduction over 3-month window 
+    #NOTE:  Before the 2nd novel variant is introduced, all individuals are already on the reduced waning curves 
+    #       from the 1st novel variant, except those who got infected during novel variant period (inf = 2) and 
+    #       their hybrid immunity is bumped up to improved curves. When the 2nd novel variant is introduced,
+    #       everyone already on the reduced waning curves remain on the reduced waning curves. Only those with the
+    #       improved hybrid immunity (inf = 2) are bumped down to reduced hybrid immunity curves (inf = 1).
+    if(i %in% c(14:16)){
+      variant_wave_prior_inf_index <- which(variant_wave_2 == i - 13 & inf == 2)
+      inf[variant_wave_prior_inf_index] <- 1
     } 
     
     #Staggering vaccination over 3-month window
@@ -331,8 +360,8 @@ annualBoosterSimulation <- function(df){
     #change their prior infection status to 1/2, time since last to 1, perfect immunity counter to 3
     index_outcome <- which(severe_outcomes == 1 | nonsevere_outcomes == 1)
     index_no_new_variant <- which(new_variant_marker == 0)
-    inf[intersect(index_outcome, which(new_variant_marker == 1))] <- 2
-    inf[intersect(index_outcome, index_no_new_variant)] <- 1
+    inf[intersect(index_outcome, which(new_variant_marker == 1))] <- 2 #If individual gets infected during novel variant period, then hybrid immunity curve is back to original hybrid immunity curve
+    inf[intersect(index_outcome, index_no_new_variant)] <- 1 #If individual gets infected not during novel variant period, keep inf at 1
     time_since_last[index_outcome] <- 1
     perfect_immunity_counter[index_outcome] <- 3
     
@@ -364,12 +393,7 @@ annualBoosterSimulation <- function(df){
   return(list(colSums(input[, (8:57)]), 
               sum(colSums((input %>% filter(prior_inf == 1))[, (8:32)])), 
               sum(colSums((input %>% filter(prior_inf == 0))[, (8:32)]))))
-  #write.csv(colSums(input[, (8:55)]), paste0("simulation-results/updated model/95ui/waning-upper/sero-upper/case-lower/annualBooster-", age_info, "-mean.csv")) ####CHANGE HERE
 }
-
-# set.seed(88)
-# clean_df %>% lapply(annualBoosterSimulation)
-
 
 biannualBoosterSimulation <- function(df){
   
@@ -381,8 +405,9 @@ biannualBoosterSimulation <- function(df){
   averted['total_hosps'] <- 0
   age_info <- averted$age_group[1]
   averted['perc_death'] <- (hosp_death_age_stratified %>% filter(age_group == age_info))$perc_death
-  averted['vaccine_wave'] <- sample(c(1:3), nrow(averted), replace = TRUE)
-  averted['variant_wave'] <- sample(c(1:3), nrow(averted), replace = TRUE)
+  averted['vaccine_wave'] <- sample(c(1:3), nrow(averted), replace = TRUE) #Vaccine distributed over 3-month period
+  averted['variant_wave'] <- sample(c(1:3), nrow(averted), replace = TRUE) #3-month introduction of novel variant #1
+  averted['variant_wave_2'] <- sample(c(1:3), nrow(averted), replace = TRUE) #3-month introduction of novel variant #2
   
   input<- averted
   
@@ -396,7 +421,7 @@ biannualBoosterSimulation <- function(df){
   prob_death <- input$perc_death
   perfect_immunity_counter <- rep(0,nrow(input)) #If non-death infection occurs, counting down perfect immunity months
   index_recent_infection <- which(inf == 1 & time_since_last < 3 & time_since_last < time_since_last_dose) #Individuals infected in 3 months preceding start of sim have perfect immunity at start
-  perfect_immunity_counter[index_recent_infection] <- 4 - time_since_last[index_recent_infection] #REVISIT
+  perfect_immunity_counter[index_recent_infection] <- 4 - time_since_last[index_recent_infection] 
   death_marker <- rep(0,nrow(input)) #If death occurs
   hosp_count <- rep(0, nrow(input))
   death_count <- rep(0, nrow(input))
@@ -404,14 +429,26 @@ biannualBoosterSimulation <- function(df){
   months <- c(1:24)
   vaccine_wave <- input$vaccine_wave
   variant_wave <- input$variant_wave
+  variant_wave_2 <- input$variant_wave_2
   
   #Iterate through each time step
   for (i in (1:25)) {
     
-    #Staggering variant introduction over 3-month window 
-    if(i %in% c(14:16)){
-      variant_wave_index <- which(variant_wave == i - 13)
+    #Staggering first variant introduction over 3-month window 
+    if(i %in% c(2:4)){
+      variant_wave_index <- which(variant_wave == i - 1)
       new_variant_marker[variant_wave_index] <- 1
+    } 
+    
+    ##Staggering second variant introduction over 3-month window 
+    #NOTE:  Before the 2nd novel variant is introduced, all individuals are already on the reduced waning curves 
+    #       from the 1st novel variant, except those who got infected during novel variant period (inf = 2) and 
+    #       their hybrid immunity is bumped up to improved curves. When the 2nd novel variant is introduced,
+    #       everyone already on the reduced waning curves remain on the reduced waning curves. Only those with the
+    #       improved hybrid immunity (inf = 2) are bumped down to reduced hybrid immunity curves (inf = 1).
+    if(i %in% c(14:16)){
+      variant_wave_prior_inf_index <- which(variant_wave_2 == i - 13 & inf == 2)
+      inf[variant_wave_prior_inf_index] <- 1
     } 
     
     #Staggering vaccination over 3-month window
@@ -441,8 +478,8 @@ biannualBoosterSimulation <- function(df){
     #change their prior infection status to 1/2, time since last to 1, perfect immunity counter to 3
     index_outcome <- which(severe_outcomes == 1 | nonsevere_outcomes == 1)
     index_no_new_variant <- which(new_variant_marker == 0)
-    inf[intersect(index_outcome, which(new_variant_marker == 1))] <- 2
-    inf[intersect(index_outcome, index_no_new_variant)] <- 1
+    inf[intersect(index_outcome, which(new_variant_marker == 1))] <- 2 #If individual gets infected during novel variant period, then hybrid immunity curve is back to original hybrid immunity curve
+    inf[intersect(index_outcome, index_no_new_variant)] <- 1 #If individual gets infected not during novel variant period, keep inf at 1
     time_since_last[index_outcome] <- 1
     perfect_immunity_counter[index_outcome] <- 3
     
@@ -476,10 +513,6 @@ biannualBoosterSimulation <- function(df){
   return(list(colSums(input[, (8:57)]), 
               sum(colSums((input %>% filter(prior_inf == 1))[, (8:32)])), 
               sum(colSums((input %>% filter(prior_inf == 0))[, (8:32)]))))
-  #write.csv(colSums(input[, (8:55)]), paste0("simulation-results/updated model/95ui/waning-upper/sero-upper/case-lower/biannualBooster-", age_info, "-mean.csv")) ####CHANGE HERE
 }
-
-# set.seed(88)
-# clean_df %>% lapply(biannualBoosterSimulation)
 
 ###########################################################################################

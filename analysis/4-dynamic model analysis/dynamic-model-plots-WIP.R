@@ -21,8 +21,8 @@ library(scales)
 library(here)
 library(data.table)
 
-
 ###################################################################################################
+
 tp <- list.files(path, pattern = "*.csv", full.names = TRUE)
 all_files <- lapply(tp, read.delim)
 
