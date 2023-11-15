@@ -6,7 +6,7 @@
 
 rm(list=ls())
 
-setwd("~/Stanford Research/booster-timing")
+setwd(here::here())
 
 #Loading in libraries
 library(readr)
@@ -75,13 +75,13 @@ long_data_weights <- melt(weights) %>% filter(!is.na(value)) %>%
 
 
 #Merge weights to raw waning data
-merged_data <- merged_data <- merge(rbind(long_data_mean, long_data_lower, long_data_upper),
+merged_data <- merge(rbind(long_data_mean, long_data_lower, long_data_upper),
                                     long_data_weights, by = c("months", "prior_inf", "num_doses", "age_group", "study"), all.x = TRUE) %>%
   mutate(estimate = factor(estimate, levels = c("lower", "mean", "upper")))
 
 
 #Fit model
-nonsevere_model <- lm(ve_input ~ month_input  + factor(age_group)  + prior_inf + estimate ,
+nonsevere_model <- lm(ve_input ~ month_input  + factor(age_group) + prior_inf + estimate ,
                       weights = weight,
                       data = merged_data %>% filter(num_doses == '3-dose'))
 summary(nonsevere_model)
@@ -138,7 +138,7 @@ write.csv(prediction_data_immuno_severe, "results/waning-predictions/main/nonsev
 
 
 #Plot curves
-plot_data <- prediction_data_immunocompetent_pess_wan
+plot_data <- prediction_data_immunocompetent_opt_wan
 
 plot_data %>% 
   filter(estimate == "mean") %>%

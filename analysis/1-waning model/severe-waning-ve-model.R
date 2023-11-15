@@ -6,7 +6,7 @@
 
 rm(list=ls())
 
-setwd("~/Stanford Research/booster-timing")
+setwd(here::here())
 
 #Loading in libraries
 library(readr)
@@ -140,7 +140,7 @@ write.csv(prediction_data_immuno_severe, "results/waning-predictions/main/severe
 
 
 #Plot curves
-plot_data <- prediction_data_immunocompetent_pess_wan
+plot_data <- prediction_data_immunocompetent
 
 plot_data %>% 
   filter(estimate == "mean") %>%
