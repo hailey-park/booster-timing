@@ -119,16 +119,16 @@ for (waning in c("upper", "mean", "lower")){
       source(here::here(paste0("analysis/3-main analysis/intervention-functions-", immune_status, ".R")))
 
       set.seed(88)
-      clean_df %>% lapply(average_10_sims_no)
+      clean_df %>% lapply(noBoosterSim_parallel)
       
       set.seed(88)
-      clean_df %>% lapply(average_10_sims_one)
+      clean_df %>% lapply(oneBoosterSim_parallel)
 
       set.seed(88)
-      clean_df %>% lapply(average_10_sims_annual)
+      clean_df %>% lapply(annualBoosterSim_parallel)
 
       set.seed(88)
-      clean_df %>% lapply(average_10_sims_biannual)
+      clean_df %>% lapply(biannualBoosterSim_parallel)
       
       
     }
