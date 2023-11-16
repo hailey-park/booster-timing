@@ -42,7 +42,7 @@ comb <- function(...) {
 
 num_sims <- 25
 
-average_10_sims_no <- function(df){
+noBoosterSim_Parallel <- function(df){
   
   age_info <- df$age_group[1]
   
@@ -55,7 +55,7 @@ average_10_sims_no <- function(df){
 }
 
 
-average_10_sims_one <- function(df){
+oneBoosterSim_Parallel <- function(df){
   
   age_info <- df$age_group[1]
   
@@ -67,7 +67,7 @@ average_10_sims_one <- function(df){
   write.csv(sim_df, paste0("results/simulation-results/variantAnalysis/S1/ver1/", immune_status, "/waning-", waning, "/sero-", sero, "/case-", case, "/1Booster-", age_info, "-average.csv"))
 }
 
-average_10_sims_annual <- function(df){
+annualBoosterSim_parallel <- function(df){
   
   age_info <- df$age_group[1]
   
@@ -80,7 +80,7 @@ average_10_sims_annual <- function(df){
   
 }
 
-average_10_sims_biannual <- function(df){
+biannualBoosterSim_parallel <- function(df){
   
   age_info <- df$age_group[1]
   
@@ -93,6 +93,27 @@ average_10_sims_biannual <- function(df){
   
 }
 
+#Set up folder structure to save simulation results
+dir.create("results/simulation-results")
+dir.create("results/simulation-results/variantAnalysis")
+dir.create("results/simulation-results/variantAnalysis/S1")
+dir.create("results/simulation-results/variantAnalysis/S1/ver1")
+
+for (immune_status in c("immunocompetent", "immunoMild", "immunoSevere")) {
+  dir.create(paste0("results/simulation-results/variantAnalysis/S1/ver1/", immune_status))
+  
+  for (waning in c("upper", "mean", "lower")) {
+    dir.create(paste0("results/simulation-results/variantAnalysis/S1/ver1/", immune_status, "/waning-", waning))
+    
+    for (sero in c("upper", "mean", "lower")) {
+      dir.create(paste0("results/simulation-results/variantAnalysis/S1/ver1/", immune_status, "/waning-", waning, "/sero-", sero))
+      
+      for (case in c("upper", "mean", "lower")) {
+        dir.create(paste0("results/simulation-results/variantAnalysis/S1/ver1/", immune_status, "/waning-", waning, "/sero-", sero, "/case-", case))
+      }
+    }
+  }
+}
 
 #Run Booster Interventions
 
@@ -124,16 +145,16 @@ for (immune_status in c("immunocompetent", "immunoMild", "immunoSevere")) {
         source(here::here(paste0("analysis/5-variant scenario analysis/S1/intervention-functions-variantAnalysis-S1-", immune_status, ".R")))
         
         set.seed(88)
-        clean_df %>% lapply(average_10_sims_no)
+        clean_df %>% lapply(noBoosterSim_Parallel)
         
         set.seed(88)
-        clean_df %>% lapply(average_10_sims_one)
+        clean_df %>% lapply(oneBoosterSim_Parallel)
         
         set.seed(88)
-        clean_df %>% lapply(average_10_sims_annual)
+        clean_df %>% lapply(annualBoosterSim_parallel)
         
         set.seed(88)
-        clean_df %>% lapply(average_10_sims_biannual)
+        clean_df %>% lapply(biannualBoosterSim_parallel)
         
         
       }

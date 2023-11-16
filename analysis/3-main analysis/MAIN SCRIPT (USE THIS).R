@@ -89,6 +89,25 @@ biannualBoosterSim_parallel <- function(df){
   write.csv(sim_df, paste0("results/simulation-results/main/", immune_status, "/waning-", waning, "/sero-", sero, "/case-", case, "/biannualBooster-", age_info, "-average.csv"))
 }
 
+#Set up folder structure to save simulation results
+dir.create("results/simulation-results")
+dir.create("results/simulation-results/main")
+
+for (immune_status in c("immunocompetent", "immunoMild", "immunoSevere")) {
+  dir.create(paste0("results/simulation-results/main/", immune_status))
+  
+  for (waning in c("upper", "mean", "lower")) {
+    dir.create(paste0("results/simulation-results/main/", immune_status, "/waning-", waning))
+    
+    for (sero in c("upper", "mean", "lower")) {
+      dir.create(paste0("results/simulation-results/main/", immune_status, "/waning-", waning, "/sero-", sero))
+    
+      for (case in c("upper", "mean", "lower")) {
+        dir.create(paste0("results/simulation-results/main/", immune_status, "/waning-", waning, "/sero-", sero, "/case-", case))
+      }
+    }
+  }
+}
 
 #Run Booster Interventions
 
