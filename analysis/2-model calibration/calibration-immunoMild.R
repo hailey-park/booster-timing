@@ -111,11 +111,24 @@ calibration <- function(df) {
 
 save_results <- function(df){
   age_group <- (df$age_group)[1]
-  write.csv(df, paste0("results/calibration/immunoMild/waning-", waning, "/sero-", sero, "/1mil-",age_group,"-monthly.csv")) 
+  write.csv(df, paste0("results/calibration/main/immunoMild/waning-", waning, "/sero-", sero, "/1mil-",age_group,"-monthly.csv")) 
   
 }
 
 ##################################################################################################
+#Set up folder structure to save calibration results
+dir.create("results/calibration")
+dir.create("results/calibration/main")
+dir.create("results/calibration/main/immunoMild")
+
+for (waning in c("upper", "mean", "lower")) {
+  dir.create(paste0("results/calibration/main/immunoMild/waning-", waning))
+  
+  for (sero in c("upper", "mean", "lower")) {
+    dir.create(paste0("results/calibration/main/immunoMild/waning-", waning, "/sero-", sero))
+  }
+}
+
 #Running Calibration on Population of 1,000,000 
 
 for (waning in c("upper", "mean", "lower")) {
