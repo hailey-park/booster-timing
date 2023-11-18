@@ -6,7 +6,7 @@
 
 rm(list=ls())
 
-setwd("~/Stanford Research/booster-timing") 
+setwd(here::here())
 
 #Load libraries
 library(readr)
