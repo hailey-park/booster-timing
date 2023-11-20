@@ -46,8 +46,8 @@ for(pop_strat in c("18+", "65+", "75+")) {
   for(waning in c("lower", "mean", "upper")) {
     
     #Read in files 
-    source(here::here("simulation-data-inputs-dynamic.R"))
-    source(here::here(paste0("intervention-functions-dynamic-", pop_strat, ".R")))
+    source(here::here("analysis/4-dynamic model analysis/simulation-data-inputs-dynamic.R"))
+    source(here::here(paste0("analysis/4-dynamic model analysis/intervention-functions-dynamic-", pop_strat, ".R")))
     
     #Run one-time booster program
     set.seed(88)
