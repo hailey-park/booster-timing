@@ -33,7 +33,6 @@ registerDoParallel(num_cores)
 num_sims <- 10
 
 #Set up folder structure to save simulation results
-dir.create("results/simulation-results")
 dir.create("results/simulation-results/dynamic")
 
 for (pop_strat in c("18+", "65+", "75+")) {

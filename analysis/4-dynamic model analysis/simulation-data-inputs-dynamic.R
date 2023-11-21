@@ -39,11 +39,11 @@ nonsevere_waning <- nonsevere_waning_data %>% filter(estimate == waning) %>% dpl
   rowwise() %>% mutate(nonsevere_ve_pred = max(ve_pred, 0))
 
 waning_data_clean <- setDT(merge(severe_waning, nonsevere_waning, by = c("age_group", "prior_inf", "immunocompromised", "weeks")) %>%
-                             select(-c("ve_pred.x", "ve_pred.y")))
+                             select(-c(ve_pred.x, ve_pred.y)))
 
 
 #MAKE SURE YOU ARE READING IN THE CORRECT CALIBRATION FILE
-entire_pop <-  read.csv(paste0("calibration/dynamic/entire_population_calibration_nonsevere2.5x_", waning, ".csv"))[,-1] 
+entire_pop <-  read.csv(paste0("results/calibration/dynamic/entire_population_calibration_nonsevere2.5x_", waning, ".csv"))[,-1] 
 
 total_infections <- ceiling(sum((merge(entire_pop %>% group_by(age_group) %>% summarise(total = n()),
                                        average_nonsevere_incidence, by = "age_group", all.x = TRUE) %>% 

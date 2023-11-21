@@ -94,7 +94,6 @@ biannualBoosterSim_parallel <- function(df){
 }
 
 #Set up folder structure to save simulation results
-dir.create("results/simulation-results")
 dir.create("results/simulation-results/variantAnalysis")
 dir.create("results/simulation-results/variantAnalysis/S1")
 dir.create("results/simulation-results/variantAnalysis/S1/ver1")

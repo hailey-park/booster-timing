@@ -17,6 +17,7 @@ old_severe_waning <- old_severe_waning_data %>% filter(estimate == waning) %>%
   rowwise() %>% mutate(old_severe_ve_pred = max(ve_pred, 0))  %>% dplyr::select(-c(estimate, month_input, study, ve_pred))
 new_severe_waning <- new_severe_waning_data %>% filter(estimate == waning) %>%
   rowwise() %>% mutate(new_severe_ve_pred = max(ve_pred, 0))  %>% dplyr::select(-c(estimate, month_input, study, ve_pred))
+
 old_nonsevere_waning <- old_nonsevere_waning_data %>% filter(estimate == waning) %>%
   rowwise() %>% mutate(old_nonsevere_ve_pred = max(ve_pred, 0))  %>% dplyr::select(-c(estimate, month_input, ve_pred))
 new_nonsevere_waning <- new_nonsevere_waning_data %>% filter(estimate == waning) %>%
@@ -28,10 +29,10 @@ waning_data_clean <- setDT(merge(merge(merge(new_severe_waning, old_severe_wanin
 
 
 #MAKE SURE YOU ARE READING IN THE CORRECT CALIBRATION FILE
-age_18_49 <- read.csv(paste0("results/calibration/immunocompetent/waning-", waning, "/sero-", sero, "/1mil-18-49 years-monthly.csv"))[,-1] 
-age_50_64 <-  read.csv(paste0("results/calibration/immunocompetent/waning-", waning, "/sero-", sero, "/1mil-50-64 years-monthly.csv"))[,-1]
-age_65_74 <-  read.csv(paste0("results/calibration/immunocompetent/waning-", waning, "/sero-", sero, "/1mil-65-74 years-monthly.csv"))[,-1]
-age_75_plus <-  read.csv(paste0("results/calibration/immunocompetent/waning-", waning, "/sero-", sero, "/1mil-75+ years-monthly.csv"))[,-1] 
+age_18_49 <- read.csv(paste0("results/calibration/main/immunocompetent/waning-", waning, "/sero-", sero, "/1mil-18-49 years-monthly.csv"))[,-1] 
+age_50_64 <-  read.csv(paste0("results/calibration/main/immunocompetent/waning-", waning, "/sero-", sero, "/1mil-50-64 years-monthly.csv"))[,-1]
+age_65_74 <-  read.csv(paste0("results/calibration/main/immunocompetent/waning-", waning, "/sero-", sero, "/1mil-65-74 years-monthly.csv"))[,-1]
+age_75_plus <-  read.csv(paste0("results/calibration/main/immunocompetent/waning-", waning, "/sero-", sero, "/1mil-75+ years-monthly.csv"))[,-1] 
 ############################################################################################
 #clean age matrices
 clean_age_matrix <- function(df){

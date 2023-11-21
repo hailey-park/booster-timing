@@ -28,10 +28,10 @@ waning_data_clean <- setDT(merge(merge(merge(new_severe_waning, old_severe_wanin
 
 
 #MAKE SURE YOU ARE READING IN THE CORRECT CALIBRATION FILE
-age_18_49 <- read.csv(paste0("results/calibration/immuno-mild/waning-", waning, "/sero-", sero, "/1mil-18-49 years-monthly.csv"))[,-1] 
-age_50_64 <-  read.csv(paste0("results/calibration/immuno-mild/waning-", waning, "/sero-", sero, "/1mil-50-64 years-monthly.csv"))[,-1]
-age_65_74 <-  read.csv(paste0("results/calibration/immuno-mild/waning-", waning, "/sero-", sero, "/1mil-65-74 years-monthly.csv"))[,-1]
-age_75_plus <-  read.csv(paste0("results/calibration/immuno-mild/waning-", waning, "/sero-", sero, "/1mil-75+ years-monthly.csv"))[,-1] 
+age_18_49 <- read.csv(paste0("results/calibration/main/immuno-mild/waning-", waning, "/sero-", sero, "/1mil-18-49 years-monthly.csv"))[,-1] 
+age_50_64 <-  read.csv(paste0("results/calibration/main/immuno-mild/waning-", waning, "/sero-", sero, "/1mil-50-64 years-monthly.csv"))[,-1]
+age_65_74 <-  read.csv(paste0("results/calibration/main/immuno-mild/waning-", waning, "/sero-", sero, "/1mil-65-74 years-monthly.csv"))[,-1]
+age_75_plus <-  read.csv(paste0("results/calibration/main/immuno-mild/waning-", waning, "/sero-", sero, "/1mil-75+ years-monthly.csv"))[,-1] 
 ############################################################################################
 #clean age matrices
 clean_age_matrix <- function(df){

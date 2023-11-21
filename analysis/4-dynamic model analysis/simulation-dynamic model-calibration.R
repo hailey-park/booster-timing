@@ -184,6 +184,7 @@ calibration <- function(df) {
 }
 
 
+dir.create("results/calibration/dynamic")
 
 for (waning in c("lower", "mean", "upper")) {
   
@@ -198,6 +199,6 @@ for (waning in c("lower", "mean", "upper")) {
     lapply(calibration)
   
   #Write to calibration folder
-  write.csv(calibration_results[[1]] , paste0("calibration/dynamic/entire_population_calibration_nonsevere2.5x_", waning, ".csv"))
+  write.csv(calibration_results[[1]] , paste0("results/calibration/dynamic/entire_population_calibration_nonsevere2.5x_", waning, ".csv"))
   
 }
