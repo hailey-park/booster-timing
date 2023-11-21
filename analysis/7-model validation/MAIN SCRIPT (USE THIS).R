@@ -53,6 +53,11 @@ oneBoosterSim_parallel <- function(df){
   write.csv(sim_df, paste0("results/simulation-results/validation/", immune_status, "/waning-", waning, "/sero-", sero, "/case-", case, "/1Booster-", age_info, "-average.csv"))
 }
 
+
+#Set up folder structure to save simulation results
+dir.create("results/simulation-results/validation")
+
+
 #Run Booster Interventions
 
 # NOTE:   To quantify uncertainty in the study findings, we generated uncertainty intervals (UI) for our model
