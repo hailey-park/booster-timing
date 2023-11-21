@@ -90,6 +90,27 @@ biannualBoosterSim_parallel <- function(df){
 }
 
 
+#Set up folder structure to save simulation results
+dir.create("results/simulation-results/sensitivity")
+dir.create("results/simulation-results/sensitivity/lower-vax-eff")
+
+for (immune_status in c("immunocompetent", "immunoMild", "immunoSevere")) {
+  dir.create(paste0("results/simulation-results/sensitivity/lower-vax-eff/", immune_status))
+  
+  for (waning in c("upper", "mean", "lower")) {
+    dir.create(paste0("results/simulation-results/sensitivity/lower-vax-eff/", immune_status, "/waning-", waning))
+    
+    for (sero in c("upper", "mean", "lower")) {
+      dir.create(paste0("results/simulation-results/sensitivity/lower-vax-eff/", immune_status, "/waning-", waning, "/sero-", sero))
+      
+      for (case in c("upper", "mean", "lower")) {
+        dir.create(paste0("results/simulation-results/sensitivity/lower-vax-eff/", immune_status, "/waning-", waning, "/sero-", sero, "/case-", case))
+      }
+    }
+  }
+}
+
+
 #Run Booster Interventions
 
 # NOTE:   To quantify uncertainty in the study findings, we generated uncertainty intervals (UI) for our model
