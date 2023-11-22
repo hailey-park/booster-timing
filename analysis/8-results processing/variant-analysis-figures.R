@@ -5,7 +5,7 @@
 ###################################################################################################
 
 rm(list=ls())
-setwd("~/Stanford Research/booster-timing")
+setwd(here::here())
 
 #Load libraries
 library(readr)
@@ -55,19 +55,19 @@ ggplot(plot_data, aes(months)) +
         text = element_text(size=12)) 
 ###################################################################################################
 #Plotting variant analyses
-oneBooster_original <- read.csv("results/simulation-results/main/immuno-mild/1Booster-summarised.csv")[,-1]
-oneBooster_S1 <- read.csv("results/simulation-results/variantAnalysis/S1/ver1/immuno-mild/1Booster-summarised.csv")[,-1]
-oneBooster_S2 <- read.csv("results/simulation-results/variantAnalysis/S2/ver1/immuno-mild/1Booster-summarised.csv")[,-1]
-oneBooster_S3 <- read.csv("results/simulation-results/variantAnalysis/S3/ver1/immuno-mild/1Booster-summarised.csv")[,-1]
-oneBooster_S4 <- read.csv("results/simulation-results/variantAnalysis/S4/ver1/immuno-mild/1Booster-summarised.csv")[,-1]
+oneBooster_original <- read.csv("results/simulation-results/main/immunoMild/1Booster-summarised.csv")[,-1]
+oneBooster_S1 <- read.csv("results/simulation-results/variantAnalysis/S1/ver1/immunoMild/1Booster-summarised.csv")[,-1]
+oneBooster_S2 <- read.csv("results/simulation-results/variantAnalysis/S2/ver1/immunoMild/1Booster-summarised.csv")[,-1]
+oneBooster_S3 <- read.csv("results/simulation-results/variantAnalysis/S3/ver1/immunoMild/1Booster-summarised.csv")[,-1]
+oneBooster_S4 <- read.csv("results/simulation-results/variantAnalysis/S4/ver1/immunoMild/1Booster-summarised.csv")[,-1]
 
-annualBooster_original <- read.csv("results/simulation-results/main/immuno-mild/annualBooster-18-49 years-summarised.csv")[,-1]
+annualBooster_original <- read.csv("results/simulation-results/main/immunoMild/annualBooster-18-49 years-summarised.csv")[,-1]
 annualBooster_S1 <- read.csv("results/simulation-results/variantAnalysis/S1/ver1/annualBooster-18-49 years-summarised.csv")[,-1]
 annualBooster_S2 <- read.csv("results/simulation-results/variantAnalysis/S2/ver1/annualBooster-18-49 years-summarised.csv")[,-1]
 annualBooster_S3 <- read.csv("results/simulation-results/variantAnalysis/S3/ver1/annualBooster-18-49 years-summarised.csv")[,-1]
 annualBooster_S4 <- read.csv("results/simulation-results/variantAnalysis/S4/ver1/annualBooster-18-49 years-summarised.csv")[,-1]
 
-biannualBooster_original <- read.csv("simulation-results/final-results/95ui/immuno-mild/biannualBooster-18-49 years-summarised.csv")[,-1]
+biannualBooster_original <- read.csv("simulation-results/main/immunoMild/biannualBooster-18-49 years-summarised.csv")[,-1]
 biannualBooster_S1 <- read.csv("results/simulation-results/variantAnalysis/S1/ver1/biannualBooster-18-49 years-summarised.csv")[,-1]
 biannualBooster_S2 <- read.csv("results/simulation-results/variantAnalysis/S2/ver1/biannualBooster-18-49 years-summarised.csv")[,-1]
 biannualBooster_S3 <- read.csv("results/simulation-results/variantAnalysis/S3/ver1/biannualBooster-18-49 years-summarised.csv")[,-1]

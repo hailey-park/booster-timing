@@ -5,7 +5,7 @@
 ###################################################################################################
 
 rm(list=ls())
-setwd("~/Stanford Research/booster-timing")
+setwd(here::here())
 
 #Load libraries
 library(readr)
@@ -33,11 +33,11 @@ age_65_74_95ui <- data.frame(
 age_75plus_95ui <- data.frame(
   age_group = "75+ years")
 
-immuno_mild_95ui <- read.csv("simulation-results/final-results/sensitivity/five-year-sim/immuno-mild/1Booster-summarised.csv")[,-1] %>%
+immuno_mild_95ui <- read.csv("simulation-results/sensitivity/five-year-sim/immunoMild/1Booster-summarised.csv")[,-1] %>%
   mutate(age_group = "Immunocompromised \n(Mild)")
 immuno_mild_95ui$months <- c(0:60)
 
-immuno_severe_95ui <- read.csv("simulation-results/final-results/sensitivity/five-year-sim/immuno-severe/1Booster-summarised.csv")[,-1] %>%
+immuno_severe_95ui <- read.csv("simulation-results//sensitivity/five-year-sim/immunoSevere/1Booster-summarised.csv")[,-1] %>%
   mutate(age_group = "Immunocompromised \n(Moderate/Severe)")
 immuno_severe_95ui$months <- c(0:60)
 

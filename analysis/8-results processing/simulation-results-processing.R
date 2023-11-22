@@ -5,7 +5,7 @@
 ###################################################################################################
 
 rm(list=ls())
-setwd("~/Stanford Research/booster-timing")
+setwd(here::here())
 
 #Load libraries
 library(readr)
@@ -28,7 +28,7 @@ for(age_group in c("18-49 years", "50-64 years", "65-74 years", "75+ years")) {
   
   for(vax_interventions in c("1Booster", "annualBooster", "biannualBooster")){
     
-    for(immuno in c("immunocompetent", "immuno-mild", "immuno-severe")) {
+    for(immuno in c("immunocompetent", "immunoMild", "immunoSevere")) {
       
       #Depending on which analysis you are processing results for, double check file paths
       main <- "main"
@@ -53,7 +53,7 @@ for(age_group in c("18-49 years", "50-64 years", "65-74 years", "75+ years")) {
       ui_14<- read.csv(paste0("results/simulation-results/", main, "/", immuno, "/waning-mean/sero-lower/case-mean/", vax_interventions,"-", age_group,"-average.csv"))[,-1]
       ui_15<- read.csv(paste0("results/simulation-results/", main, "/", immuno, "/waning-mean/sero-lower/case-lower/", vax_interventions,"-", age_group,"-average.csv"))[,-1]
       ui_16 <- read.csv(paste0("results/simulation-results/", main, "/", immuno, "/waning-mean/sero-mean/case-upper/", vax_interventions,"-", age_group,"-average.csv"))[,-1]
-      #ui_17 <- read.csv(paste0("results/simulation-results/", main, "/", immuno, "/waning-mean/sero-mean/case-mean/", vax_interventions,"-", age_group,"-average.csv"))[,-1]
+      ui_17 <- read.csv(paste0("results/simulation-results/", main, "/", immuno, "/waning-mean/sero-mean/case-mean/", vax_interventions,"-", age_group,"-average.csv"))[,-1]
       ui_18 <- read.csv(paste0("results/simulation-results/", main, "/", immuno, "/waning-mean/sero-mean/case-lower/", vax_interventions,"-", age_group,"-average.csv"))[,-1]
       ui_19<- read.csv(paste0("results/simulation-results/", main, "/", immuno, "/waning-upper/sero-upper/case-upper/", vax_interventions,"-", age_group,"-average.csv"))[,-1]
       ui_20 <- read.csv(paste0("results/simulation-results/", main, "/", immuno, "/waning-upper/sero-upper/case-mean/", vax_interventions,"-", age_group,"-average.csv"))[,-1]
@@ -113,7 +113,7 @@ for(age_group in c("18-49 years", "50-64 years", "65-74 years", "75+ years")) {
 
 for(vax_intervention in c("1Booster", "annualBooster", "biannualBooster")){
   
-  for(immuno in c("immuno-mild", "immuno-severe")) {
+  for(immuno in c("immunoMild", "immunoSevere")) {
     
     #Depending on which analysis you are processing results for, double check file paths
     main <- "main"
