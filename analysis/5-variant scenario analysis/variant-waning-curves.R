@@ -27,9 +27,9 @@ nonsevere_waning_data <- read.csv("results/waning-predictions/main/nonsevere_wan
 #         i) absolute protection is reduced by 10% with circulation of the novel variant
 #         ii) absolute protection is reduced by 10%, and rate of waning increases by 5%
 #       3 sets of waning curves are created
-#         prior_inf == 0: These are the downgraded vaccine-induced immunity waning curves (vaccinated individual enters novel variant period)
+#         prior_inf == 0: These are the downgraded vaccine-induced immunity waning curves (previously vaccinated individual enters novel variant period)
 #         prior_inf == 1: These are the downgraded hybrid immunity waning curves (previously infected individuals enters novel variant period)
-#         prior_inf == 2: These are the upgraded hybrid immunity waning curves (if individual gets infected under novel variant period)
+#         prior_inf == 2: These are the upgraded hybrid immunity waning curves (if individual gets infected with novel variant - protection is restored to original waning curve)
 
 upgraded_hybrid_immunity <- severe_waning_data %>% filter(prior_inf == 1) %>%
   mutate(prior_inf = 2)
@@ -42,14 +42,14 @@ combined_waning_data <- rbind(downgraded_immunity, upgraded_hybrid_immunity)
 
 write.csv(combined_waning_data, "results/waning-predictions/variant-waning/immune-escape-ver1/severe_waning_predictions_monthly.csv")
 
-#Creating the waning curves under a novel variant and updated vaccines (specific to Variant Scenario 4 only)
+#Creating additional waning curves under a novel variant and updated vaccines (specific to Variant Scenario 4 only)
 #NOTE:  Variants are modeled under two different immune evasion scenarios: 
 #         i) absolute protection is reduced by 10% with circulation of the novel variant
 #         ii) absolute protection is reduced by 10%, and rate of waning increases by 5%
 #       3 sets of waning curves are created
 #         prior_inf == 0: These are the upgraded vaccine-induced immunity waning curves (vaccinated individual enters novel variant period)
 #         prior_inf == 1: These are the downgraded hybrid immunity waning curves (previously infected individuals enters novel variant period)
-#         prior_inf == 2: These are the upgraded hybrid immunity waning curves (if individual gets infected under novel variant period)
+#         prior_inf == 2: These are the upgraded hybrid immunity waning curves (if individual gets infected with novel variant - protection is restored to original waning curves)
 
 upgraded_hybrid_immunity <- severe_waning_data %>% filter(prior_inf == 1) %>%
   mutate(prior_inf = 2)
