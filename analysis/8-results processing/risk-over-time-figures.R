@@ -1,16 +1,17 @@
+setwd(here::here())
 
 ###################################################################################################
 #Getting Calibrated Lambdas
 age_group <- "75+ years"
-waning_lower_sero_lower <- read.csv(file=paste0("calibration/95ui/immuno-severe/waning-lower/sero-lower/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
-waning_lower_sero_mean <- read.csv(file=paste0("calibration/95ui/immuno-severe/waning-lower/sero-mean/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
-waning_lower_sero_upper <- read.csv(file=paste0("calibration/95ui/immuno-severe/waning-lower/sero-upper/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
-waning_mean_sero_lower <- read.csv(file=paste0("calibration/95ui/immuno-severe/waning-mean/sero-lower/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
-waning_mean_sero_mean <- read.csv(file=paste0("calibration/95ui/immuno-severe/waning-mean/sero-mean/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
-waning_mean_sero_upper <- read.csv(file=paste0("calibration/95ui/immuno-severe/waning-mean/sero-upper/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
-waning_upper_sero_lower <- read.csv(file=paste0("calibration/95ui/immuno-severe/waning-upper/sero-lower/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
-waning_upper_sero_mean <- read.csv(file=paste0("calibration/95ui/immuno-severe/waning-upper/sero-mean/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
-waning_upper_sero_upper <- read.csv(file=paste0("calibration/95ui/immuno-severe/waning-upper/sero-upper/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
+waning_lower_sero_lower <- read.csv(file=paste0("calibration/main/immunoSevere/waning-lower/sero-lower/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
+waning_lower_sero_mean <- read.csv(file=paste0("calibration/main/immunoSevere/waning-lower/sero-mean/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
+waning_lower_sero_upper <- read.csv(file=paste0("calibration/main/immunoSevere/waning-lower/sero-upper/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
+waning_mean_sero_lower <- read.csv(file=paste0("calibration/main/immunoSevere/waning-mean/sero-lower/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
+waning_mean_sero_mean <- read.csv(file=paste0("calibration/main/immunoSevere/waning-mean/sero-mean/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
+waning_mean_sero_upper <- read.csv(file=paste0("calibration/main/immunoSevere/waning-mean/sero-upper/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
+waning_upper_sero_lower <- read.csv(file=paste0("calibration/main/immunoSevere/waning-upper/sero-lower/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
+waning_upper_sero_mean <- read.csv(file=paste0("calibration/main/immunoSevere/waning-upper/sero-mean/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
+waning_upper_sero_upper <- read.csv(file=paste0("calibration/main/immunoSevere/waning-upper/sero-upper/1mil-", age_group, "-monthly.csv"),nrows=1)$lambda
 
 min(waning_lower_sero_upper, waning_lower_sero_mean, waning_lower_sero_lower,
     waning_mean_sero_upper, waning_mean_sero_mean, waning_mean_sero_lower,
@@ -23,7 +24,7 @@ max(waning_lower_sero_upper, waning_lower_sero_mean, waning_lower_sero_lower,
 waning_mean_sero_mean
 ###################################################################################################
 #Plotting Protection over time
-severe_waning_data <- read.csv("ve model results/severe_waning_predictions_monthly_immunoSevere.csv")[,-1] %>%
+severe_waning_data <- read.csv("results/waning-predictions/severe_waning_predictions_monthly_immunoSevere.csv")[,-1] %>%
   mutate(lambda = case_when(age_group == "18-49 years" ~ 0.0008777705, #0.001020913, #0.0007333639,
                             age_group == "50-64 years" ~ 0.001558905,# 0.001744473, #0.001111062,
                             age_group == "65-74 years" ~ 0.003505925, #0.003875088, #0.002255153,

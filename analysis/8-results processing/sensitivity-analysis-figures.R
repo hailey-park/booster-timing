@@ -5,7 +5,7 @@
 ###################################################################################################
 
 rm(list=ls())
-setwd("~/Stanford Research/booster-timing")
+setwd(here::here())
 
 #Load libraries
 library(readr)
@@ -21,33 +21,33 @@ library(data.table)
 
 ###################################################################################################
 #Plotting sensitivity analyses
-oneBooster_original <- read.csv("results/simulation-results/main/immuno-mild/1Booster-summarised.csv")[,-1]
-oneBooster_high_inc <- read.csv("results/simulation-results/sensitivity/high-incidence/immuno-mild/1Booster-summarised.csv")[,-1]
-oneBooster_low_inc <- read.csv("results/simulation-results/sensitivity/low-incidence/immuno-mild/1Booster-summarised.csv")[,-1]
-oneBooster_100_sero <- read.csv("results/simulation-results/sensitivity/100-sero/immuno-mild/1Booster-summarised.csv")[,-1]
-oneBooster_opt_ve <- read.csv("results/simulation-results/sensitivity/optimistic-ve/immuno-mild/1Booster-summarised.csv")[,-1]
-oneBooster_opt_wan <- read.csv("results/simulation-results/sensitivity/optimistic-waning/immuno-mild/1Booster-summarised.csv")[,-1]
-oneBooster_pes_ve <- read.csv("results/simulation-results/sensitivity/pessimistic-ve/immuno-mild/1Booster-summarised.csv")[,-1]
-oneBooster_pes_wan <- read.csv("results/simulation-results/sensitivity/pessimistic-waning/immuno-mild/1Booster-summarised.csv")[,-1]
+oneBooster_original <- read.csv("results/simulation-results/main/immunoMild/1Booster-summarised.csv")[,-1]
+oneBooster_high_inc <- read.csv("results/simulation-results/sensitivity/high-incidence/immunoMild/1Booster-summarised.csv")[,-1]
+oneBooster_low_inc <- read.csv("results/simulation-results/sensitivity/low-incidence/immunoMild/1Booster-summarised.csv")[,-1]
+oneBooster_100_sero <- read.csv("results/simulation-results/sensitivity/100-sero/immunoMild/1Booster-summarised.csv")[,-1]
+oneBooster_opt_ve <- read.csv("results/simulation-results/sensitivity/optimistic-ve/immunoMild/1Booster-summarised.csv")[,-1]
+oneBooster_opt_wan <- read.csv("results/simulation-results/sensitivity/optimistic-waning/immunoMild/1Booster-summarised.csv")[,-1]
+oneBooster_pes_ve <- read.csv("results/simulation-results/sensitivity/pessimistic-ve/immunoMild/1Booster-summarised.csv")[,-1]
+oneBooster_pes_wan <- read.csv("results/simulation-results/sensitivity/pessimistic-waning/immunoMild/1Booster-summarised.csv")[,-1]
 
-annualBooster_original <- read.csv("results/simulation-results/main/immuno-mild/annualBooster-summarised.csv")[,-1]
-annualBooster_high_inc <- read.csv("results/simulation-results/sensitivity/high-incidence/immuno-mild/annualBooster-summarised.csv")[,-1]
-annualBooster_low_inc <- read.csv("results/simulation-results/sensitivity/low-incidence/immuno-mild/annualBooster-summarised.csv")[,-1]
-annualBooster_100_sero <- read.csv("results/simulation-results/sensitivity/100-sero/immuno-mild/annualBooster-summarised.csv")[,-1]
-annualBooster_opt_ve <- read.csv("results/simulation-results/sensitivity/optimistic-ve/immuno-mild/annualBooster-summarised.csv")[,-1]
-annualBooster_opt_wan <- read.csv("results/simulation-results/sensitivity/optimistic-waning/immuno-mild/annualBooster-summarised.csv")[,-1]
-annualBooster_pes_ve <- read.csv("results/simulation-results/sensitivity/pessimistic-ve/immuno-mild/annualBooster-summarised.csv")[,-1]
-annualBooster_pes_wan <- read.csv("results/simulation-results/sensitivity/pessimistic-waning/immuno-mild/annualBooster-summarised.csv")[,-1]
+annualBooster_original <- read.csv("results/simulation-results/main/immunoMild/annualBooster-summarised.csv")[,-1]
+annualBooster_high_inc <- read.csv("results/simulation-results/sensitivity/high-incidence/immunoMild/annualBooster-summarised.csv")[,-1]
+annualBooster_low_inc <- read.csv("results/simulation-results/sensitivity/low-incidence/immunoMild/annualBooster-summarised.csv")[,-1]
+annualBooster_100_sero <- read.csv("results/simulation-results/sensitivity/100-sero/immunoMild/annualBooster-summarised.csv")[,-1]
+annualBooster_opt_ve <- read.csv("results/simulation-results/sensitivity/optimistic-ve/immunoMild/annualBooster-summarised.csv")[,-1]
+annualBooster_opt_wan <- read.csv("results/simulation-results/sensitivity/optimistic-waning/immunoMild/annualBooster-summarised.csv")[,-1]
+annualBooster_pes_ve <- read.csv("results/simulation-results/sensitivity/pessimistic-ve/immunoMild/annualBooster-summarised.csv")[,-1]
+annualBooster_pes_wan <- read.csv("results/simulation-results/sensitivity/pessimistic-waning/immunoMild/annualBooster-summarised.csv")[,-1]
 
 
-biannualBooster_original <- read.csv("results/simulation-results/main/immuno-mild/biannualBooster-summarised.csv")[,-1]
-biannualBooster_high_inc <- read.csv("results/simulation-results/sensitivity/high-incidence/immuno-mild/biannualBooster-summarised.csv")[,-1]
-biannualBooster_low_inc <- read.csv("results/simulation-results/sensitivity/low-incidence/immuno-mild/biannualBooster-summarised.csv")[,-1]
-biannualBooster_100_sero <- read.csv("results/simulation-results/sensitivity/100-sero/immuno-mild/biannualBooster-summarised.csv")[,-1]
-biannualBooster_opt_ve <- read.csv("results/simulation-results/sensitivity/optimistic-ve/immuno-mild/biannualBooster-summarised.csv")[,-1]
-biannualBooster_opt_wan <- read.csv("results/simulation-results/sensitivity/optimistic-waning/immuno-mild/biannualBooster-summarised.csv")[,-1]
-biannualBooster_pes_ve <- read.csv("results/simulation-results/sensitivity/pessimistic-ve/immuno-mild/biannualBooster-summarised.csv")[,-1]
-biannualBooster_pes_wan <- read.csv("results/simulation-results/sensitivity/pessimistic-waning/immuno-mild/biannualBooster-summarised.csv")[,-1]
+biannualBooster_original <- read.csv("results/simulation-results/main/immunoMild/biannualBooster-summarised.csv")[,-1]
+biannualBooster_high_inc <- read.csv("results/simulation-results/sensitivity/high-incidence/immunoMild/biannualBooster-summarised.csv")[,-1]
+biannualBooster_low_inc <- read.csv("results/simulation-results/sensitivity/low-incidence/immunoMild/biannualBooster-summarised.csv")[,-1]
+biannualBooster_100_sero <- read.csv("results/simulation-results/sensitivity/100-sero/immunoMild/biannualBooster-summarised.csv")[,-1]
+biannualBooster_opt_ve <- read.csv("results/simulation-results/sensitivity/optimistic-ve/immunoMild/biannualBooster-summarised.csv")[,-1]
+biannualBooster_opt_wan <- read.csv("results/simulation-results/sensitivity/optimistic-waning/immunoMild/biannualBooster-summarised.csv")[,-1]
+biannualBooster_pes_ve <- read.csv("results/simulation-results/sensitivity/pessimistic-ve/immunoMild/biannualBooster-summarised.csv")[,-1]
+biannualBooster_pes_wan <- read.csv("results/simulation-results/sensitivity/pessimistic-waning/immunoMild/biannualBooster-summarised.csv")[,-1]
 
 
 sensitivity<- data.frame(oneBooster_mean = c(colSums(oneBooster_original)[1],
