@@ -1,21 +1,18 @@
 # Sensitivity Analyses
 
-This repository contains analytic code for estimating the risk of severe COVID-19 under different frequencies of booster vaccination, accounting for waning of protection against nonsevere and severe disease and differential risk by age group and immunocompromised status.
+This folder contains code for running all the sensitivity analyses. We created separate code folders for analyses that utilize the calibrated risk groups from the main analysis but make adjustments to the booster interventions themselves. These include the `delayed-vacc-admin`, `five-year-sim`, and `lower-vax-eff` analyses. All other sensitivity analyses testing varying assumptions on waning curves and baseline seroprevalence levels can be run in the `all-other-sa` folder.
 
 
 ## Structure
-* `data`: contains all data used in this analysis (both raw and processed forms)
-* `analysis`:
-  * `1-waning model`: contains code for constructing the waning protection curves by risk group, and waning curves used for sensitivity analyses
-  * `2-model calibration`: contains code for constructing hypothetical cohorts of 1 million individuals for each risk group and calibrating age-specific estimates of severe COVID-19 risk 
-  * `3-main analysis`: contains code for running different frequencies of booster vaccination (no booster, one-time booster, annual booster, semiannual booster) over a two year time horizon
-  * `4-dynamic model analysis`: contains code for running different frequencies of booster vaccination using a dynamic transmission model
-  *  `5-variant scenario analysis`: contains code for running different frequencies of booster vaccination under various novel variant scenarios
-  *  `6-sensitivity analysis`: contains code for running different frequencies of booster vaccination under varying assumptions and scenarios (five year simulation; delayed vaccine administration, lower vaccine effectiveness after 1st dose)
-  *  `7-model validation`: contains code for running a model validation over a 3-month period
-  *  `8-results processing`: contains all code needed for processing of simulation results
-  *  `9-data cleaning`: contains all code needed for initial cleaning of data
-
-* `results`: contains results for waning model predictions, calibration, and unprocessed simulation outputs
-* `figures`: contains figure outputs (jpg and csv)
-* `tables`: contains table outputs (jpg and csv)
+* `delayed-vacc-admin`:  Contains code for running different frequencies of booster vaccination with delayed vaccine rollout (6-months). 
+* `five-year-sim`: Contains code for running different frequencies of booster vaccination over a five year time horizon
+* `lower-vax-eff`: Contains code for running different frequencies of booster vaccination with assumption of lower vaccine effectiveness after the 1st booster dose
+* `all-other-sa`: Contains code for running different frequencies of booster vaccination under varying waning curve and baseline seroprevalence assumptions. A separate calibration must be run for each of these analyses (see `2-model calibration` for more information) prior to running the booster interventions. However, all of these analyses utilize the same booster intervention scripts. A list of the sensitivity analyses with varied waning curve and seroprevalence assumptions are listed below:
+  * `optimistic-ve`
+  * `optimistic-waning`
+  * `pessimistic-ve`
+  * `pessimistic-waning`
+  *  `100-sero`
+  *  `low-sero`
+  *  `high-sero`
+    
