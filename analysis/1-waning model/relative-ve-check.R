@@ -64,7 +64,9 @@ adj_waning_clean <- merge(adj_relative_waning, waning_data, by.x = c("months_bas
 
 combined_rel <- rbind(adj_waning_clean, relative_ve_data_lit)
 
-ggplot(combined_rel, aes(months, relative_ve*100, color = factor(group))) +
+plot_list = list()
+
+plot_list[[1]] <- ggplot(combined_rel, aes(months, relative_ve*100, color = factor(group))) +
   geom_line(size = .75) +
   ylab("Relative Protective Effectiveness (%)") +
   xlab("Time (months)") +
@@ -76,5 +78,9 @@ ggplot(combined_rel, aes(months, relative_ve*100, color = factor(group))) +
   scale_x_continuous(breaks=c(0,4,8,12,16,20,24), expand = c(0, 0)) +
   ggtitle("Relative VE Comparison")
 
+#Save plot
+pdf("figures/appendix/relative-waning-plot.pdf")
+print(plot_list[[1]])
+dev.off()
 
 ###################################################################################################
