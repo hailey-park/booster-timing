@@ -138,7 +138,7 @@ write.csv(prediction_data_immuno_severe, "results/waning-predictions/main/nonsev
 
 
 #Plot curves
-plot_data <- prediction_data_immunocompetent_opt_wan
+plot_data <- prediction_data_immuno_severe_opt_wan
 
 plot_data %>% 
   filter(estimate == "mean") %>%
@@ -183,57 +183,56 @@ write.csv(prediction_data_immuno_severe_pess_ve, "results/waning-predictions/pes
 
 #OPTIMISTIC WANING
 #Rate of waning reduced by 10%
-prediction_data_immunocompetent_opt_wan <- prediction_data_immunocompetent %>% 
+prediction_data_immunocompetent_opt_wan <- rbind(below65, above65_74, above75) %>% 
   group_by(age_group, prior_inf, estimate) %>%
   mutate(maxByGroup = max(ve_pred),
          minByGroup = min(ve_pred)) %>%
   ungroup() %>% rowwise() %>%
   mutate(ve_pred = if_else(ve_pred + (months * 0.00416) > maxByGroup,
                            maxByGroup, 
-                           if_else(ve_pred == minByGroup & prior_inf == 0,
-                                   minByGroup,
-                                   ve_pred + (months * 0.00416)))) %>%
+                           ve_pred + (months * 0.00416))) %>%
   group_by(age_group, prior_inf, estimate) %>%
   mutate(min_month = months[which(ve_pred == min(ve_pred))[1]],
          minByGroup = min(ve_pred)) %>%
   ungroup() %>% rowwise() %>%
   mutate(ve_pred = if_else(ve_pred > minByGroup & months > min_month, minByGroup, ve_pred)) %>%
-  dplyr::select(-c("maxByGroup", "minByGroup", "min_month"))
+  dplyr::select(-c("maxByGroup", "minByGroup", "min_month")) %>%
+  rowwise() %>% mutate(ve_pred = max(ve_pred, 0))
 
 
-prediction_data_immuno_mild_opt_wan <- prediction_data_immuno_mild %>% 
+prediction_data_immuno_mild_opt_wan <- rbind(below65, above65_74, above75) %>%
+  rowwise() %>% mutate(ve_pred = ve_pred - 0.13) %>% 
+  group_by(age_group, prior_inf, estimate) %>%
+  mutate(maxByGroup = max(ve_pred),
+         minByGroup = min(ve_pred)) %>%
+  ungroup() %>% rowwise() %>%
+  mutate(ve_pred = if_else(ve_pred + (months * 0.00416) > maxByGroup,
+                           maxByGroup,
+                           ve_pred + (months * 0.00416))) %>%
+  group_by(age_group, prior_inf, estimate) %>%
+  mutate(min_month = months[which(ve_pred == min(ve_pred))[1]],
+         minByGroup = min(ve_pred)) %>%
+  ungroup() %>% rowwise() %>%
+  mutate(ve_pred = if_else(ve_pred > minByGroup & months > min_month, minByGroup, ve_pred)) %>%
+  dplyr::select(-c("maxByGroup", "minByGroup", "min_month")) %>%
+  rowwise() %>% mutate(ve_pred = max(ve_pred, 0))
+
+prediction_data_immuno_severe_opt_wan <- rbind(below65, above65_74, above75) %>%
+  rowwise() %>% mutate(ve_pred = (ve_pred - months * 0.005) - 0.13) %>% 
   group_by(age_group, prior_inf, estimate) %>%
   mutate(maxByGroup = max(ve_pred),
          minByGroup = min(ve_pred)) %>%
   ungroup() %>% rowwise() %>%
   mutate(ve_pred = if_else(ve_pred + (months * 0.00416) > maxByGroup,
                            maxByGroup, 
-                           if_else(ve_pred == minByGroup & prior_inf == 0,
-                                   minByGroup,
-                                   ve_pred + (months * 0.00416)))) %>%
+                           ve_pred + (months * 0.00416))) %>%
   group_by(age_group, prior_inf, estimate) %>%
   mutate(min_month = months[which(ve_pred == min(ve_pred))[1]],
          minByGroup = min(ve_pred)) %>%
   ungroup() %>% rowwise() %>%
   mutate(ve_pred = if_else(ve_pred > minByGroup & months > min_month, minByGroup, ve_pred)) %>%
-  dplyr::select(-c("maxByGroup", "minByGroup", "min_month"))
-
-prediction_data_immuno_severe_opt_wan <- prediction_data_immuno_severe %>% 
-  group_by(age_group, prior_inf, estimate) %>%
-  mutate(maxByGroup = max(ve_pred),
-         minByGroup = min(ve_pred)) %>%
-  ungroup() %>% rowwise() %>%
-  mutate(ve_pred = if_else(ve_pred + (months * 0.00416) > maxByGroup,
-                           maxByGroup, 
-                           if_else(ve_pred == minByGroup & prior_inf == 0,
-                                   minByGroup,
-                                   ve_pred + (months * 0.00416)))) %>%
-  group_by(age_group, prior_inf, estimate) %>%
-  mutate(min_month = months[which(ve_pred == min(ve_pred))[1]],
-         minByGroup = min(ve_pred)) %>%
-  ungroup() %>% rowwise() %>%
-  mutate(ve_pred = if_else(ve_pred > minByGroup & months > min_month, minByGroup, ve_pred)) %>%
-  dplyr::select(-c("maxByGroup", "minByGroup", "min_month"))
+  dplyr::select(-c("maxByGroup", "minByGroup", "min_month")) %>%
+  rowwise() %>% mutate(ve_pred = max(ve_pred, 0))
 
 
 write.csv(prediction_data_immunocompetent_opt_wan, "results/waning-predictions/optimistic-waning/nonsevere_waning_predictions_monthly.csv")
