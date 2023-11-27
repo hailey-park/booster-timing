@@ -117,6 +117,11 @@ save_results <- function(df){
 
 ##################################################################################################
 #Set up folder structure to save calibration results
+#NOTE:    Depending on which sensitivity analysis you are running calibration for, change out 'main' folders
+#         for a different name ('opt-ve', 'opt-waning', 'pess-ve', 'pess-waning', 'low-sero', 'high-sero', '100-sero').
+#         Other sensitivity analyses, such as the five year simulation or delayed vaccine administration use the calibrations
+#         from the main analysis, and won't require a separate calibration.
+
 dir.create("results/calibration")
 dir.create("results/calibration/main")
 dir.create("results/calibration/main/immunoSevere")
@@ -129,8 +134,15 @@ for (waning in c("upper", "mean", "lower")) {
   }
 }
 
-#Running Calibration on Population of 1,000,000 
 
+#Set seroprevalence estimates
+seroprev_estimates <- c(0.8238, 0.6579, 0.4681, 0.4681) #Main
+#seroprev_estimates <- pmin((c(0.8238, 0.6579, 0.4681, 0.4681) * 1.25), 1) #Higher Seroprevalence
+#seroprev_estimates <- (c(0.8238, 0.6579, 0.4681, 0.4681) * .75) #Lower Seroprevalence
+#seroprev_estimates <- c(1,1,1,1) #100% Seroprevalence
+
+
+#Running Calibration on Population of 1,000,000 
 for (waning in c("upper", "mean", "lower")) {
   
   waning_data_clean <- waning_data %>% filter(estimate == waning)
@@ -141,34 +153,34 @@ for (waning in c("upper", "mean", "lower")) {
     age_18_49_cal <- data.frame(individual = c(1:1000000),
                                 age_group = '18-49 years',
                                 num_doses = '3-dose',
-                                prior_inf = case_when(sero == "upper" ~ rbinom(1000000, 1, 1),
-                                                      sero == "mean" ~ rbinom(1000000, 1, 0.8238),
-                                                      TRUE ~ rbinom(1000000, 1, 0.7238)))
+                                prior_inf = case_when(sero == "upper" ~ rbinom(1000000, 1, min(seroprev_estimates[1] + 0.25, 1)),
+                                                      sero == "mean" ~ rbinom(1000000, 1, seroprev_estimates[1]),
+                                                      TRUE ~ rbinom(1000000, 1, max(seroprev_estimates[1] - 0.1, 0))))
     
     set.seed(88)
     age_50_64_cal <- data.frame(individual = c(1:1000000),
                                 age_group = '50-64 years',
                                 num_doses = sample(c('3-dose', '4-dose'), 1000000, prob = c(0.6, 0.4), replace = TRUE),
-                                prior_inf = case_when(sero == "upper" ~ rbinom(1000000, 1, 0.9079),
-                                                      sero == "mean" ~ rbinom(1000000, 1, 0.6579),
-                                                      TRUE ~ rbinom(1000000, 1, 0.5579)))
+                                prior_inf = case_when(sero == "upper" ~ rbinom(1000000, 1, min(seroprev_estimates[2] + 0.25, 1)),
+                                                      sero == "mean" ~ rbinom(1000000, 1, seroprev_estimates[2]),
+                                                      TRUE ~ rbinom(1000000, 1, max(seroprev_estimates[2] - 0.1, 0))))
     
     set.seed(88)
     age_65_74_cal <- data.frame(individual = c(1:1000000),
                                 age_group = '65-74 years',
                                 num_doses = sample(c('3-dose', '4-dose'), 1000000, prob = c(0.6, 0.4), replace = TRUE),
-                                prior_inf = case_when(sero == "upper" ~ rbinom(1000000, 1, 0.7181),
-                                                      sero == "mean" ~ rbinom(1000000, 1, 0.4681),
-                                                      TRUE ~ rbinom(1000000, 1, 0.3681)))
+                                prior_inf = case_when(sero == "upper" ~ rbinom(1000000, 1, min(seroprev_estimates[3] + 0.25, 1)),
+                                                      sero == "mean" ~ rbinom(1000000, 1, seroprev_estimates[3]),
+                                                      TRUE ~ rbinom(1000000, 1, max(seroprev_estimates[3] - 0.1, 0))))
     
     
     set.seed(88)
     age_75_plus_cal <- data.frame(individual = c(1:1000000),
                                   age_group = '75+ years',
                                   num_doses = as.character(sample(c('3-dose', '4-dose'), 1000000, prob = c(0.6, 0.4), replace = TRUE)),
-                                  prior_inf = case_when(sero == "upper" ~ rbinom(1000000, 1, 0.7181),
-                                                        sero == "mean" ~ rbinom(1000000, 1, 0.4681),
-                                                        TRUE ~ rbinom(1000000, 1, 0.3681)))
+                                  prior_inf = case_when(sero == "upper" ~ rbinom(1000000, 1, min(seroprev_estimates[4] + 0.25, 1)),
+                                                        sero == "mean" ~ rbinom(1000000, 1, seroprev_estimates[4]),
+                                                        TRUE ~ rbinom(1000000, 1, max(seroprev_estimates[4] - 0.1, 0))))
     
     set.seed(88)
     calibration_results <- list(age_18_49_cal, age_50_64_cal, age_65_74_cal, age_75_plus_cal) %>%
