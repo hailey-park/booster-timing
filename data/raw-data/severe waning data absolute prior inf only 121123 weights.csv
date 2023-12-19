@@ -1,0 +1,4 @@
+Outcome,Vaccine Status,Prior Infection,Month0.5,Month1,Month2,Month3,Month4,Month5,Month6,Month7,Month8,Month9,Month10,Month11,Month12,Month13,Month14,Month15,Month16,References
+Severe Outcomes,Unvaccinated,Yes,,,,5.586592179,5.714285714,5.780346821,5.917159763,5.847953216,5.681818182,5.681818182,5.464480874,5.154639175,4.901960784,4.651162791,4.273504274,3.924646782,3.636363636,"Bobrovitz et al (Lancet, 2023)"
+Severe Outcomes,Unvaccinated,Yes,,,,12.19512195,15.625,14.28571429,14.49275362,15.87301587,17.24137931,16.94915254,11.11111111,9.708737864,11.49425287,11.23595506,,,,"COVID Forecasting Team (Lancet, 2023)"
+Severe Outcomes,Unvaccinated,Yes,,,,1.449275362,3.703703704,3.703703704,2.702702703,2.702702703,2.702702703,,,,,,,,,"Carazo et al (Lancet Healthy Longevity, 2023)"
