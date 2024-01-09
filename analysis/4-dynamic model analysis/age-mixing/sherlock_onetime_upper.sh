@@ -2,7 +2,7 @@
 #                     # lines starting with #SBATCH is an instruction to the job scheduler
 #SBATCH --job-name=hailey   # Job name
 #SBATCH --mail-type=ALL         # Mail events (NONE, BEGIN, END, FAIL, ALL)
-#SBATCH --mail-user=bjsinger@stanford.edu # Where to send mail  
+#SBATCH --mail-user=haileyjp@stanford.edu # Where to send mail  
 #SBATCH --nodes=1                   # Use one node
 #SBATCH --ntasks=1                  # Run a single task
 #SBATCH --mem-per-cpu=5gb           # Memory per processor
@@ -16,6 +16,6 @@ hostname
 
 ml R
 
-Rscript Onetime.R
+Rscript Onetime_upper.R
 
 wait

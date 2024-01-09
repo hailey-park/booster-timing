@@ -109,3 +109,93 @@ if (job_selector==5){
   }
 }
 ###################################################################################################
+#75+ Population Strategy; Realistic Uptake
+
+if (((job_selector==7)|(job_selector==8))|(job_selector==9)) {
+  source(here::here("simulation-data-inputs-dynamic-with-age-mixing-mean.R"))
+  source(here::here("intervention-functions-dynamic with mixing-75+.R"))
+  
+  set.seed(88)
+  inspection <- clean_df %>% 
+    lapply(realistic_vax_assignment)
+}
+
+if (job_selector==7){
+  #Running 1 Booster (will only do for 75+ pop strat since this is same across all population strategies)
+  set.seed(88)
+  sim_df_1B <- for (i in 1:25) {
+    results <- oneBoosterSimulation(inspection[[1]])
+    write.csv(results, paste0("simulation-results/mean/75+ strategy/realistic/1-Booster/", i, ".csv"))
+  }
+} else if (job_selector==8){
+  #Running Annual Booster
+  set.seed(88)
+  sim_df_aB <- for (i in 1:25) {
+    results <- annualBoosterSimulation(inspection[[1]])
+    write.csv(results, paste0("simulation-results/mean/75+ strategy/realistic/Annual-Booster/", i, ".csv"))
+  }
+} else if (job_selector==9){
+  #Running Biannual Booster
+  set.seed(88)
+  sim_df_bB <- for (i in 1:25) {
+    results <- biannualBoosterSimulation(inspection[[1]])
+    write.csv(results, paste0("simulation-results/mean/75+ strategy/realistic/Biannual-Booster/", i, ".csv"))
+  }
+}
+
+###################################################################################################
+#65+ Population Strategy; Realistic Uptake
+
+if ((job_selector==10)|(job_selector==11)){
+  source(here::here("simulation-data-inputs-dynamic-with-age-mixing-mean.R"))
+  source(here::here("intervention-functions-dynamic with mixing-65+.R"))
+  
+  set.seed(88)
+  inspection <- clean_df %>% 
+    lapply(realistic_vax_assignment)
+}
+
+if (job_selector==10){
+  #Running Annual Booster
+  set.seed(88)
+  sim_df_aB <- for (i in 1:25) {
+    results <- annualBoosterSimulation(inspection[[1]])
+    write.csv(results, paste0("simulation-results/mean/65+ strategy/realistic/Annual-Booster/", i, ".csv"))
+  }
+} else if (job_selector==11){
+  #Running Biannual Booster
+  set.seed(88)
+  sim_df_bB <- for (i in 1:25) {
+    results <- biannualBoosterSimulation(inspection[[1]])
+    write.csv(results, paste0("simulation-results/mean/65+ strategy/realistic/Biannual-Booster/", i, ".csv"))
+  }
+}
+
+###################################################################################################
+#18+ Population Strategy; Realistic Uptake
+
+if ((job_selector==12)|(job_selector==13)){
+  source(here::here("simulation-data-inputs-dynamic-with-age-mixing-mean.R"))
+  source(here::here("intervention-functions-dynamic with mixing-18+.R"))
+  
+  set.seed(88)
+  inspection <- clean_df %>% 
+    lapply(realistic_vax_assignment)
+}
+
+if (job_selector==12){
+  #Running Annual Booster
+  set.seed(88)
+  sim_df_aB <- for (i in 1:25) {
+    results <- annualBoosterSimulation(inspection[[1]])
+    write.csv(results, paste0("simulation-results/mean/18+ strategy/realistic/Annual-Booster/", i, ".csv"))
+  }
+} else if (job_selector==13){
+  #Running Biannual Booster
+  set.seed(88)
+  sim_df_bB <- for (i in 1:25) {
+    results <- biannualBoosterSimulation(inspection[[1]])
+    write.csv(results, paste0("simulation-results/mean/18+ strategy/realistic/Biannual-Booster/", i, ".csv"))
+  }
+}
+###################################################################################################
