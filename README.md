@@ -37,5 +37,6 @@ Analysis was conducted in R (version 4.2.1). The dynamic transmission model anal
 Please direct any questions to the study authors:
 
 Hailey Park, Stanford University, contact: Hailey.Park@stanford.edu
+
 Nathan Lo, Stanford University, contact: Nathan.Lo@stanford.edu
 
