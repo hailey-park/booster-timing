@@ -4,6 +4,8 @@
 #Date: September 25, 2023
 ###################################################################################################
 
+#NOTE: Average run-time for simulation script is ~12 hours.
+
 rm(list=ls())
 gc()
 

@@ -4,6 +4,8 @@
 #Date: April 18, 2023
 ###################################################################################################
 
+#NOTE: Average run-time for calibration script is ~30 minutes.
+
 rm(list=ls())
 
 setwd(here::here())

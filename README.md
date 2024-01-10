@@ -1,7 +1,5 @@
 # Comparison of Timing of Booster Vaccination for COVID-19 to Prevent Severe Disease by Risk Group in the United States
 
-The code will be updated at the time of publication
-
 This repository contains analytic code for estimating the risk of severe COVID-19 under different frequencies of booster vaccination, accounting for waning of protection against nonsevere and severe disease and differential risk by age group and immunocompromised status.
 
 Data sources used for this analysis is publicly available. 
@@ -12,7 +10,7 @@ Data sources used for this analysis is publicly available.
   * `1-waning model`: contains code for constructing the waning protection curves by risk group, and waning curves used for sensitivity analyses
   * `2-model calibration`: contains code for constructing hypothetical cohorts of 1 million individuals for each risk group and calibrating age-specific estimates of severe COVID-19 risk 
   * `3-main analysis`: contains code for running different frequencies of booster vaccination (no booster, one-time booster, annual booster, semiannual booster) over a two year time horizon
-  * `4-dynamic model analysis`: contains code for running different frequencies of booster vaccination using a dynamic transmission model
+  * `4-dynamic model analysis`: contains code for running different frequencies of booster vaccination using a dynamic transmission model. See the `README.md` inside this folder for more information.
   *  `5-variant scenario analysis`: contains code for running different frequencies of booster vaccination under various novel variant scenarios
   *  `6-sensitivity analysis`: contains code for running different frequencies of booster vaccination under varying waning curve and baseline seroprevalence assumptions and scenarios (five year simulation; delayed vaccine administration, lower vaccine effectiveness after 1st dose, higher subclinical infection). See the `README.md` inside this folder for more information.
   *  `7-model validation`: contains code for running a model validation over a 3-month period
@@ -20,8 +18,8 @@ Data sources used for this analysis is publicly available.
   *  `9-data cleaning`: contains all code needed for initial cleaning of data
 
 * `results`: contains results for waning model predictions, calibration, and unprocessed simulation outputs. (Calibration and simulation outputs folders are empty because files are too large to be pushed to github. Users will have to generate the calibration files one their own local machine to run the analysis).
-* `figures`: contains figure outputs (jpg and csv)
-* `tables`: contains table outputs (jpg and csv)
+* `figures`: contains figure outputs (jpg and pdf)
+* `tables`: contains table outputs (pdf)
 
 ## Software
-Analysis was conducted in R (version 4.2.1). 
+Analysis was conducted in R (version 4.2.1). The dynamic transmission model analyses were run on a high-performance computing cluster (Sherlock). See the `README.md` inside the `4-dynamic model analysis` folder for more information.  

@@ -14,8 +14,8 @@
 date
 hostname
 
-ml R
+ml R/4.2.0
 
-Rscript Run_Analysis_Sequential_lower.R ${SLURM_ARRAY_TASK_ID}
+Rscript Run_Analysis_Sequential_mean.R ${SLURM_ARRAY_TASK_ID}
 
 wait

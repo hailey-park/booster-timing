@@ -14,8 +14,8 @@
 date
 hostname
 
-ml R
+ml R/4.2.0
 
-Rscript Onetime_upper.R
+Rscript Onetime_lower.R
 
 wait
