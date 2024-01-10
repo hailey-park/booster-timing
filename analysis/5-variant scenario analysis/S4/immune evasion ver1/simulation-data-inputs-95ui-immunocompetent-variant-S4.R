@@ -10,33 +10,32 @@ hosp_death_age_stratified <- read.csv("data/clean-data/hosp_death_age_stratified
 old_severe_waning_data <- read.csv("results/waning-predictions/main/severe_waning_predictions_monthly.csv")[,-1]
 old_nonsevere_waning_data <- read.csv("results/waning-predictions/main/nonsevere_waning_predictions_monthly.csv")[,-1]
 
-#Worsened protection, including worse vaccine-induced immunity
-new_severe_waning_data <- read.csv("results/waning-predictions/variant-waning/immune-escape-ver1/severe_waning_predictions_monthly.csv")[,-1] 
-new_nonsevere_waning_data <- read.csv("results/waning-predictions/variant-waning/immune-escape-ver1/nonsevere_waning_predictions_monthly.csv")[,-1]
+var1_severe_waning_data <- read.csv("results/waning-predictions/variant-waning/S4-immune-escape-ver1/novel-var1/severe_waning_predictions_monthly.csv")[,-1]
+var1_nonsevere_waning_data <- read.csv("results/waning-predictions/variant-waning/S4-immune-escape-ver1/novel-var1/nonsevere_waning_predictions_monthly.csv")[,-1]
 
-#Worsened protection, including improved vaccine-induced immunity
-new_vax_severe_waning_data <- read.csv("results/waning-predictions/variant-waning/S4-immune-escape-ver1/severe_waning_predictions_monthly.csv")[,-1]
-new_vax_nonsevere_waning_data <- read.csv("results/waning-predictions/variant-waning/S4-immune-escape-ver1/nonsevere_waning_predictions_monthly.csv")[,-1]
+var2_severe_waning_data <- read.csv("results/waning-predictions/variant-waning/S4-immune-escape-ver1/novel-var2/severe_waning_predictions_monthly.csv")[,-1]
+var2_nonsevere_waning_data <- read.csv("results/waning-predictions/variant-waning/S4-immune-escape-ver1/novel-var2/nonsevere_waning_predictions_monthly.csv")[,-1]
 
 #MAKE SURE YOU ARE SETTING THE CORRECT WANING CURVE FOR CALIBRATION (mean, lower, upper)
 old_severe_waning <- old_severe_waning_data %>% filter(estimate == waning) %>%
   rowwise() %>% mutate(old_severe_ve_pred = max(ve_pred, 0))  %>% dplyr::select(-c(estimate, month_input, study, ve_pred))
-new_severe_waning <- new_severe_waning_data %>% filter(estimate == waning) %>%
-  rowwise() %>% mutate(new_severe_ve_pred = max(ve_pred, 0))  %>% dplyr::select(-c(estimate, month_input, study, ve_pred))
-new_vax_severe_waning <- new_vax_severe_waning_data %>% filter(estimate == waning) %>%
-  rowwise() %>% mutate(new_vax_severe_ve_pred = max(ve_pred, 0))  %>% dplyr::select(-c(estimate, month_input, study, ve_pred))
+var1_severe_waning <- var1_severe_waning_data %>% filter(estimate == waning) %>%
+  rowwise() %>% mutate(var1_severe_ve_pred = max(ve_pred, 0))  %>% dplyr::select(-c(estimate, month_input, study, ve_pred))
+var2_severe_waning <- var2_severe_waning_data %>% filter(estimate == waning) %>%
+  rowwise() %>% mutate(var2_severe_ve_pred = max(ve_pred, 0))  %>% dplyr::select(-c(estimate, month_input, study, ve_pred))
+
 old_nonsevere_waning <- old_nonsevere_waning_data %>% filter(estimate == waning) %>%
   rowwise() %>% mutate(old_nonsevere_ve_pred = max(ve_pred, 0))  %>% dplyr::select(-c(estimate, month_input, ve_pred))
-new_nonsevere_waning <- new_nonsevere_waning_data %>% filter(estimate == waning) %>%
-  rowwise() %>% mutate(new_nonsevere_ve_pred = max(ve_pred, 0))  %>% dplyr::select(-c(estimate, month_input, ve_pred))
-new_vax_nonsevere_waning <- new_vax_nonsevere_waning_data %>% filter(estimate == waning) %>%
-  rowwise() %>% mutate(new_vax_nonsevere_ve_pred = max(ve_pred, 0))  %>% dplyr::select(-c(estimate, month_input, ve_pred))
+var1_nonsevere_waning <- var1_nonsevere_waning_data %>% filter(estimate == waning) %>%
+  rowwise() %>% mutate(var1_nonsevere_ve_pred = max(ve_pred, 0))  %>% dplyr::select(-c(estimate, month_input, ve_pred))
+var2_nonsevere_waning <- var2_nonsevere_waning_data %>% filter(estimate == waning) %>%
+  rowwise() %>% mutate(var2_nonsevere_ve_pred = max(ve_pred, 0))  %>% dplyr::select(-c(estimate, month_input, ve_pred))
 
-waning_data_clean <- merge(merge(merge(merge(merge(new_severe_waning, old_severe_waning, by = c("age_group", "prior_inf", "months"), all.x = TRUE),
-                           old_nonsevere_waning, by = c("age_group", "prior_inf", "months"), all.x = TRUE),
-                           new_nonsevere_waning, by = c("age_group", "prior_inf", "months"), all.x = TRUE),
-                           new_vax_severe_waning,  by = c("age_group", "prior_inf", "months"), all.x = TRUE),
-                           new_vax_nonsevere_waning,  by = c("age_group", "prior_inf", "months"), all.x = TRUE)
+waning_data_clean <- setDT(merge(merge(merge(merge(merge(var2_severe_waning, old_severe_waning, by = c("age_group", "prior_inf", "months"), all = TRUE),
+                                                   old_nonsevere_waning, by = c("age_group", "prior_inf", "months"), all.x = TRUE),
+                                             var1_nonsevere_waning, by = c("age_group", "prior_inf", "months"), all.x = TRUE),
+                                       var1_severe_waning, by = c("age_group", "prior_inf", "months"), all.x = TRUE),
+                                 var2_nonsevere_waning, by = c("age_group", "prior_inf", "months"), all.x = TRUE))
 
 
 #MAKE SURE YOU ARE READING IN THE CORRECT CALIBRATION FILE
@@ -58,10 +57,9 @@ clean_df <- list(age_18_49, age_50_64, age_65_74, age_75_plus) %>%
 #calculate multiplier adjustments
 
 multiplier_adj <- function(df){
-  age_info <- df$age_group[1]
+  #age_info <- df$age_group[1]
   with_protection <- merge(df, waning_data_clean, by.x = c("age_group", "prior_inf", "months_since_last_dose_inf"), 
                            by.y = c("age_group", "prior_inf", "months"), all.x = TRUE)
-  
   perfect_immunity_index <- which(with_protection$months_since_last_dose_inf < with_protection$months_since_last_dose & with_protection$prior_inf == 1 & with_protection$months_since_last_dose_inf %in% c(1:3))
   with_protection[perfect_immunity_index, c("old_severe_ve_pred", "old_nonsevere_ve_pred")] <- 1
   
