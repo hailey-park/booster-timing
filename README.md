@@ -1,8 +1,14 @@
 # Comparison of Timing of Booster Vaccination for COVID-19 to Prevent Severe Disease by Risk Group in the United States
 
+This repository will be updated at time of publication.
+
 This repository contains analytic code for estimating the risk of severe COVID-19 under different frequencies of booster vaccination, accounting for waning of protection against nonsevere and severe disease and differential risk by age group and immunocompromised status.
 
-Data sources used for this analysis is publicly available. 
+Data sources used for this analysis is publicly available. All data used for this analysis can be found in the `data` folder.
+
+This study is under review in _Nature Communications_.
+
+The full citation for this article is: XXX
 
 ## Structure
 * `data`: contains all data used in this analysis (both raw and processed forms)
@@ -21,5 +27,15 @@ Data sources used for this analysis is publicly available.
 * `figures`: contains figure outputs (jpg and pdf)
 * `tables`: contains table outputs (pdf)
 
+## Running the Main Analysis
+The main analysis can be run using the `MAIN SCRIPT (USE THIS).R` script inside the `3-main analysis` folder. Running the full script should automatically run the calibration and all booster intervention simulation for each risk group (age groups, immunocompromised groups). Simulation results can be processed by calling the `simulation-results-processing.R` script inside the `8-results processing` folder. 
+
 ## Software
-Analysis was conducted in R (version 4.2.1). The dynamic transmission model analyses were run on a high-performance computing cluster (Sherlock). See the `README.md` inside the `4-dynamic model analysis` folder for more information.  
+Analysis was conducted in R (version 4.2.1). The dynamic transmission model analyses were run on a high-performance computing cluster (Sherlock). See the `README.md` inside the `4-dynamic model analysis` folder for more information. 
+
+## Contact 
+Please direct any questions to the study authors:
+
+Hailey Park, Stanford University, contact: Hailey.Park@stanford.edu
+Nathan Lo, Stanford University, contact: Nathan.Lo@stanford.edu
+

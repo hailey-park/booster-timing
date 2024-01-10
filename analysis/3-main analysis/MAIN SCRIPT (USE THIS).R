@@ -26,6 +26,12 @@ library(doParallel)
 library(here)
 library(data.table)
 
+#Run calibration scripts
+source(here::here(paste0("analysis/2-model calibration/calibration-immunocompetent.R")))
+source(here::here(paste0("analysis/2-model calibration/calibration-immunoMild.R")))
+source(here::here(paste0("analysis/2-model calibration/calibration-immunoSevere.R")))
+
+
 # Set up the number of cores used for parallelization.
 # Use detectCores() to find out how many cores are available.
 num_cores <- detectCores() - 1
