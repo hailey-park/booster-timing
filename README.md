@@ -23,12 +23,12 @@ The full citation for this article is: XXX
   *  `8-results processing`: contains all code needed for processing of simulation results
   *  `9-data cleaning`: contains all code needed for initial cleaning of data
 
-* `results`: contains results for waning model predictions, calibration, and unprocessed simulation outputs. (Calibration and simulation outputs folders are empty because files are too large to be pushed to github. Users will have to generate the calibration files one their own local machine to run the analysis).
+* `results`: contains results for waning model predictions, calibration, and unprocessed simulation outputs. (Calibration and simulation outputs folders are empty because files are too large to be pushed to github. Users will have to generate the calibration/simulation results files on their own local machine to run the analysis).
 * `figures`: contains figure outputs (jpg and pdf)
 * `tables`: contains table outputs (pdf)
 
 ## Running the Main Analysis
-The main analysis can be run using the `MAIN SCRIPT (USE THIS).R` script inside the `3-main analysis` folder. Running the full script should automatically run the calibration and all booster intervention simulation for each risk group (age groups, immunocompromised groups). Simulation results can be processed by calling the `simulation-results-processing.R` script inside the `8-results processing` folder. 
+The main analysis can be run using the `MAIN SCRIPT (USE THIS).R` script inside the `3-main analysis` folder. Running the full script should automatically run the calibration and all booster intervention simulations for each risk group (age groups, immunocompromised groups). Simulation results can be processed by calling the `simulation-results-processing.R` script inside the `8-results processing` folder. 
 
 ## Software
 Analysis was conducted in R (version 4.2.1). The dynamic transmission model analyses were run on a high-performance computing cluster (Sherlock). See the `README.md` inside the `4-dynamic model analysis` folder for more information. 
