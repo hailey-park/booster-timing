@@ -22,3 +22,6 @@ Data sources used for this analysis is publicly available.
 * `results`: contains results for waning model predictions, calibration, and unprocessed simulation outputs. (Calibration and simulation outputs folders are empty because files are too large to be pushed to github. Users will have to generate the calibration files one their own local machine to run the analysis).
 * `figures`: contains figure outputs (jpg and csv)
 * `tables`: contains table outputs (jpg and csv)
+
+## Software
+Analysis was conducted in R (version 4.2.1). 
