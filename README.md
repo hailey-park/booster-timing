@@ -31,7 +31,7 @@ The full citation for this article is: XXX
 The main analysis can be run using the `MAIN SCRIPT (USE THIS).R` script inside the `3-main analysis` folder. Running the full script should automatically run the calibration and all booster intervention simulations for each risk group (age groups, immunocompromised groups). Simulation results can be processed by calling the `simulation-results-processing.R` script inside the `8-results processing` folder. 
 
 ## Software
-Analysis was conducted in R (version 4.2.1). The dynamic transmission model analyses were run on a high-performance computing cluster (Sherlock). See the `README.md` inside the `4-dynamic model analysis` folder for more information. 
+Analysis was conducted in R (version 4.2.1). The installation time for R and library packages necessary for this study is only a few minutes. The dynamic transmission model analyses were run on a high-performance computing cluster (Sherlock). See the `README.md` inside the `4-dynamic model analysis` folder for more information. 
 
 ## Contact 
 Please direct any questions to the study authors:
