@@ -1,14 +1,12 @@
-# Comparison of Timing of Booster Vaccination for COVID-19 to Prevent Severe Disease by Risk Group in the United States
-
-This repository will be updated at time of publication.
+# Comparing Frequency of Booster Vaccination to Prevent Severe COVID-19 by Risk Group in the United States
 
 This repository contains analytic code for estimating the risk of severe COVID-19 under different frequencies of booster vaccination, accounting for waning of protection against nonsevere and severe disease and differential risk by age group and immunocompromised status.
 
 Data sources used for this analysis is publicly available. All data used for this analysis can be found in the `data` folder.
 
-This study is under review in _Nature Communications_.
+This study is now published in _Nature Communications_.
 
-The full citation for this article is: XXX
+The full citation for this article is: Park et al. Comparing frequency of booster vaccination to prevent severe COVID-19 by risk group in the United States. _Nature Communications_. 2024.
 
 ## Structure
 * `data`: contains all data used in this analysis (both raw and processed forms)

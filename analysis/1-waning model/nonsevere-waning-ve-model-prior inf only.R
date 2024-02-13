@@ -80,7 +80,7 @@ merged_data <- merged_data <- merge(rbind(long_data_mean, long_data_lower, long_
   
 #Fit model
 nonsevere_model <- lmer(ve_input ~ month_input  +  age_group + estimate + (month_input|study),
-                      #weights = weight,
+                      weights = weight,
                       data = merged_data)
 
 summary(nonsevere_model)
